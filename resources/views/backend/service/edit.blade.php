@@ -90,51 +90,7 @@
                         </div>
                         <!-- /.card-body -->
                     </div>
-                    <div class="card card-light">
-                        <div class="card-header">
-                            <h3 class="card-title">Price
-                            </h3>
-                            <small class="text-muted pl-2"> NO CURRENCY SIGN - NO SPACE</small>
 
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                                    <i class="fas fa-minus" aria-hidden="true">
-                                    </i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                          <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="mb-0" for="price">Price</label>
-                                    <input class="form-control" type="number" name="price" placeholder="Price"
-                                        value="{{ old('price',$service->price) }}">
-                                        <p class="mb-0 text-muted small">Main Price</p>
-                                    @error('price')
-                                        <span class="text-danger">
-                                            {{ $message }}
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="mb-0" for="sale_price">Sale Price</label>
-                                    <input class="form-control" type="number" name="sale_price" placeholder="Price"
-                                        value="{{ old('sale_price',$service->sale_price) }}">
-                                        <p class="mb-0 text-muted small">Price for sale</p>
-                                    @error('sale_price')
-                                        <span class="text-danger">
-                                            {{ $message }}
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>
                     <div class="card card-light">
                         <div class="card-header">
                             <h3 class="card-title">Excerpt

@@ -29,12 +29,13 @@
 
                     <div class="modal-body">
                         <p><strong>Client:</strong> <span id="modalAppointmentName">N/A</span></p>
+                        <p><strong>Student ID:</strong> <span id="modalStudentId">N/A</span></p>
                         <p><strong>Service:</strong> <span id="modalService">N/A</span></p>
                         <p><strong>Email:</strong> <span id="modalEmail">N/A</span></p>
                         <p><strong>Phone:</strong> <span id="modalPhone">N/A</span></p>
                         <p><strong>Staff:</strong> <span id="modalStaff">N/A</span></p>
                         <p><strong>Start:</strong> <span id="modalStartTime">N/A</span></p>
-                        <p><strong>Amount:</strong> <span id="modalAmount">N/A</span></p>
+
                         <p><strong>Notes:</strong> <span id="modalNotes">N/A</span></p>
                         <p><strong>Current Status:</strong> <span id="modalStatusBadge">N/A</span></p>
 
@@ -42,7 +43,7 @@
                         <div class="form-group ">
                             <label><strong>Status:</strong></label>
                             <select name="status" class="form-control" id="modalStatusSelect">
-                                <option value="Pending payment">Pending payment</option>
+
                                 <option value="Processing">Processing</option>
                                 <option value="Confirmed">Confirmed</option>
                                 <option value="Cancelled">Cancelled</option>
@@ -93,6 +94,9 @@
                                             <th style="width: 15%">
                                                 User
                                             </th>
+                                            <th style="width: 10%">
+                                                Student ID
+                                            </th>
                                             <th style="width: 15%">
                                                 Email
                                             </th>
@@ -126,7 +130,7 @@
                                     <tbody>
                                         @php
                                             $statusColors = [
-                                                'Pending payment' => '#f39c12',
+    
                                                 'Processing' => '#3498db',
                                                 'Confirmed' => '#2ecc71',
                                                 'Cancelled' => '#ff0000',
@@ -149,6 +153,9 @@
                                                     <small>
                                                         {{ $appointment->created_at->format('d M Y') }}
                                                     </small>
+                                                </td>
+                                                <td>
+                                                    {{ $appointment->student_id ?? 'N/A' }}
                                                 </td>
                                                 <td>
                                                     {{ $appointment->email }}
@@ -184,12 +191,13 @@
                                                         data-toggle="modal" data-target="#appointmentModal"
                                                         data-id="{{ $appointment->id }}"
                                                         data-name="{{ $appointment->name }}"
+                                                        data-student-id="{{ $appointment->student_id ?? 'N/A' }}"
                                                         data-service="{{ $appointment->service->title ?? 'MA' }}"
                                                         data-email="{{ $appointment->email }}"
                                                         data-phone="{{ $appointment->phone }}"
                                                         data-employee="{{ $appointment->employee->user->name }}"
                                                         data-start="{{ $appointment->booking_date . ' ' . $appointment->booking_time }}"
-                                                        data-amount="{{ $appointment->amount }}"
+                                
                                                         data-notes="{{ $appointment->notes }}"
                                                         data-status="{{ $appointment->status }}">View</button>
                                                 </td>
@@ -240,12 +248,13 @@
             // Set modal fields
             $('#modalAppointmentId').val($(this).data('id'));
             $('#modalAppointmentName').text($(this).data('name'));
+            $('#modalStudentId').text($(this).data('student-id'));
             $('#modalService').text($(this).data('service'));
             $('#modalEmail').text($(this).data('email'));
             $('#modalPhone').text($(this).data('phone'));
             $('#modalStaff').text($(this).data('employee'));
             $('#modalStartTime').text($(this).data('start'));
-            $('#modalAmount').text($(this).data('amount'));
+            
             $('#modalNotes').text($(this).data('notes'));
 
             // Set status select dropdown
@@ -254,7 +263,7 @@
 
             // Set status badge
             var statusColors = {
-                'Pending payment': '#f39c12',
+        
                 'Processing': '#3498db',
                 'Confirmed': '#2ecc71',
                 'Cancelled': '#ff0000',

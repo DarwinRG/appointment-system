@@ -93,8 +93,7 @@
 
                 const serviceId = $(this).data("service");
                 const serviceTitle = $(this).find('.card-title').text();
-                // const servicePrice = $(this).find('.fw-bold').text().replace('$', '');
-                const servicePrice = $(this).find('.fw-bold').text();
+                
                 const serviceDuration = $(this).find('.card-text:contains("Duration:")').text().replace(
                     'Duration: ', '');
 
@@ -102,7 +101,7 @@
                 bookingState.selectedService = {
                     id: serviceId,
                     title: serviceTitle,
-                    price: servicePrice,
+                    
                     duration: serviceDuration
                 };
 
@@ -309,17 +308,7 @@
 
                             // Add services with animation delay
                             services.forEach((service, index) => {
-                                // Determine the price display
-                                let priceDisplay;
-                                if (service.sale_price) {
-                                    // If sale price exists, show both with strike-through on original price
-                                    priceDisplay =
-                                        `<span class="text-decoration-line-through text-muted">${service.price}</span> <span class=" fw-bold">${service.sale_price}</span>`;
-                                } else {
-                                    // If no sale price, just show regular price normally
-                                    priceDisplay =
-                                        `<span class="fw-bold">${service.price}</span>`;
-                                }
+                                
 
                                 const serviceCard = `
                                     <div class="col animate-slide-in" style="animation-delay: ${index * 100}ms">
@@ -328,7 +317,7 @@
                                                 ${service.image ? `<img class="img-fluid rounded mb-2" src="uploads/images/service/${service.image}">` : ""}
                                                 <h5 class="card-title mb-1">${service.title}</h5>
                                                 <p class="card-text mb-1">${service.excerpt}</p>
-                                                <p class="card-text">${priceDisplay}</p>
+                
                                             </div>
                                         </div>
                                     </div>
@@ -369,21 +358,11 @@
                             const employees = response.employees;
                             const service = response.service;
 
-                             // Determine the price display
-                             let priceDisplay;
-                                if (service.sale_price) {
-                                    // If sale price exists, show both with strike-through on original price
-                                    priceDisplay =
-                                        `<span class="">${service.sale_price}</span>`;
-                                } else {
-                                    // If no sale price, just show regular price normally
-                                    priceDisplay =
-                                        `<span class="fw-bold">${service.price}</span>`;
-                                }
+                             
 
                             // Update service name display
                             $(".selected-service-name").html(
-                                `Selected Service: ${service.title} (${bookingState.selectedService.price})`);
+                                `Selected Service: ${service.title}`);
 
                             // Clear employees container
                             $("#employees-container").empty();
@@ -741,10 +720,8 @@
 
                 // Update service info - using the stored service object
                 if (bookingState.selectedService) {
-                    $("#summary-service").text(
-                        `${bookingState.selectedService.title} (${bookingState.selectedService.price})`);
+                    $("#summary-service").text(bookingState.selectedService.title);
                     $("#summary-duration").text(`${bookingState.selectedEmployee.slot_duration} minutes`);
-                    $("#summary-price").text(bookingState.selectedService.price);
                 }
 
                 // Update employee info

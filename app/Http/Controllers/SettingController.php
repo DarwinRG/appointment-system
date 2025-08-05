@@ -26,7 +26,6 @@ class SettingController extends Controller
             'bname'                 => 'required|string|max:200',
             'email'                 => 'nullable|email|max:200',
             'phone'                 => 'nullable|string|max:20',
-            'currency'               => 'nullable|string|max:20',
             'whatsapp'              => 'nullable|string|max:20',
             'address'               => 'nullable|string|max:255',
             'logo'                  => 'nullable|image|mimes:jpg,png,jpeg,gif,svg,webp|max:2048',
@@ -44,9 +43,14 @@ class SettingController extends Controller
 
         if($request->file('logo'))
         {
-			//create unique name of image
+            // Delete old logo if exists
+            if($setting->logo && file_exists(public_path('uploads/images/logo/' . $setting->logo))) {
+                unlink(public_path('uploads/images/logo/' . $setting->logo));
+            }
+            
+            //create unique name of image
             $logoName = time().'.'.$request->logo->getClientOriginalExtension();
-			//move image to path you wish -- it auto generate folder
+            //move image to path you wish -- it auto generate folder
             $request->logo->move(public_path('uploads/images/logo/'), $logoName);
             $data['logo'] = $logoName;
         }

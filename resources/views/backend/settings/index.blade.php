@@ -40,7 +40,7 @@
                         <div class="card-body box-profile">
                             <div class="text-center">
                                 <img class="w-50 mx-auto"
-                                    src="{{ asset('public/uploads/images/logo/' . $setting->dark_logo) }}" alt="">
+                                    src="{{ asset('uploads/images/logo/' . $setting->dark_logo) }}" alt="">
                             </div>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                     <div class="card-body box-profile">
                         <div class="text-center">
                             @if ($setting->logo)
-                                <img class="w-50 mx-auto" src="{{ asset('public/uploads/images/logo/' . $setting->logo) }}"
+                                <img class="w-50 mx-auto" src="{{ asset('uploads/images/logo/' . $setting->logo) }}"
                                     alt="">
                                 <hr>
                             @endif
@@ -125,18 +125,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label for="inputEmail" class="col-sm-2 col-form-label">Currency</label>
-                                        <div class="col-sm-10">
-                                            <input type="text"
-                                                class="form-control @error('currency') is-invalid @enderror" name="currency"
-                                                id="inputEmail" placeholder="PHP" value="{{ $setting->currency }}">
-                                                <small class="text-muted">Example: USD (use only abbreviation) </small>
-                                            @error('currency')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
+
                                     <div class="form-group row">
                                         <label for="inputName2" class="col-sm-2 col-form-label">Phone</label>
                                         <div class="col-sm-10">

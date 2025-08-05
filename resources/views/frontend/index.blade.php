@@ -24,7 +24,11 @@
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
                 <a class="navbar-brand" href="#">
-                    <i class="bi bi-calendar-check"></i> Appointment System
+                    @if ($setting->logo)
+                        <img src="{{ asset('uploads/images/logo/' . $setting->logo) }}" alt="{{ $setting->bname }}" height="40">
+                    @else
+                        <i class="bi bi-calendar-check"></i> {{ $setting->bname ?? 'Appointment System' }}
+                    @endif
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
@@ -55,7 +59,14 @@
     <div class="container">
         <div class="booking-container">
             <div class="booking-header">
-                <h2><i class="bi bi-calendar-check"></i> Appointment System</h2>
+                <h2>
+                    @if ($setting->logo)
+                        <img src="{{ asset('uploads/images/logo/' . $setting->logo) }}" alt="{{ $setting->bname }}" height="50" class="me-2">
+                    @else
+                        <i class="bi bi-calendar-check"></i>
+                    @endif
+                    {{ $setting->bname ?? 'Appointment System' }}
+                </h2>
                 <p class="mb-0">Book your appointment in a few simple steps</p>
             </div>
 
@@ -206,8 +217,7 @@
                             </div>
                             <div class="summary-item">
                                 <div class="row">
-                                    <div class="col-md-4 text-muted">Price:</div>
-                                    <div class="col-md-8" id="summary-price"></div>
+                                    
                                 </div>
                             </div>
 
@@ -224,7 +234,11 @@
                                             <label for="customer-email" class="form-label">Email</label>
                                             <input type="email" class="form-control" id="customer-email" required>
                                         </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
+                                            <label for="customer-student-id" class="form-label">Student ID</label>
+                                            <input type="text" class="form-control" id="customer-student-id" required>
+                                        </div>
+                                        <div class="col-md-6">
                                             <label for="customer-phone" class="form-label">Phone</label>
                                             <input type="tel" class="form-control" id="customer-phone" required>
                                         </div>
@@ -600,17 +614,7 @@
 
                             // Add services with animation delay
                             services.forEach((service, index) => {
-                                // Determine the price display
-                                let priceDisplay;
-                                if (service.sale_price) {
-                                    // If sale price exists, show both with strike-through on original price
-                                    priceDisplay =
-                                        `<span class="text-decoration-line-through text-muted">${service.price}</span> <span class=" fw-bold">${service.sale_price}</span>`;
-                                } else {
-                                    // If no sale price, just show regular price normally
-                                    priceDisplay =
-                                        `<span class="fw-bold">${service.price}</span>`;
-                                }
+                                
 
                                 const serviceCard = `
                                     <div class="col animate-slide-in" style="animation-delay: ${index * 100}ms">
@@ -619,7 +623,7 @@
                                                 ${service.image ? `<img class="img-fluid rounded mb-2" src="uploads/images/service/${service.image}">` : ""}
                                                 <h5 class="card-title mb-1">${service.title}</h5>
                                                 <p class="card-text mb-1">${service.excerpt}</p>
-                                                <p class="card-text">${priceDisplay}</p>
+                
                                             </div>
                                         </div>
                                     </div>
@@ -660,21 +664,11 @@
                             const employees = response.employees;
                             const service = response.service;
 
-                            // Determine the price display
-                            let priceDisplay;
-                            if (service.sale_price) {
-                                // If sale price exists, show both with strike-through on original price
-                                priceDisplay =
-                                    `<span class="">${service.sale_price}</span>`;
-                            } else {
-                                // If no sale price, just show regular price normally
-                                priceDisplay =
-                                    `<span class="fw-bold">${service.price}</span>`;
-                            }
+                            
 
                             // Update service name display
                             $(".selected-service-name").html(
-                                `Selected Service: ${service.title} (${bookingState.selectedService.price})`
+                                `Selected Service: ${service.title}`
                                 );
 
                             // Clear employees container
@@ -1033,10 +1027,8 @@
 
                 // Update service info - using the stored service object
                 if (bookingState.selectedService) {
-                    $("#summary-service").text(
-                        `${bookingState.selectedService.title} (${bookingState.selectedService.price})`);
+                    $("#summary-service").text(bookingState.selectedService.title);
                     $("#summary-duration").text(`${bookingState.selectedEmployee.slot_duration} minutes`);
-                    $("#summary-price").text(bookingState.selectedService.price);
                 }
 
                 // Update employee info
@@ -1073,12 +1065,13 @@
                     service_id: bookingState.selectedService.id,
                     name: $('#customer-name').val(),
                     email: $('#customer-email').val(),
+                    student_id: $('#customer-student-id').val(),
                     phone: $('#customer-phone').val(),
                     notes: $('#customer-notes').val(),
-                    amount: parseFloat(bookingState.selectedService.price.replace(/[^0-9.]/g, '')),
+                    
                     booking_date: bookingState.selectedDate,
                     booking_time: bookingState.selectedTime.start || bookingState.selectedTime,
-                    status: 'Pending payment',
+                                            status: 'Processing',
                     _token: csrfToken // Include CSRF token in payload
                 };
 
@@ -1110,10 +1103,11 @@
 
                         const bookingDetails = `
                                 <div class="mb-2"><strong>Customer:</strong> ${$("#customer-name").val()}</div>
+                                <div class="mb-2"><strong>Student ID:</strong> ${$("#customer-student-id").val()}</div>
                                 <div class="mb-2"><strong>Service:</strong> ${bookingState.selectedService.title}</div>
                                 <div class="mb-2"><strong>Staff:</strong> ${bookingState.selectedEmployee.user.name}</div>
                                 <div class="mb-2"><strong>Date & Time:</strong> ${formattedDate} at ${bookingState.selectedTime.display || bookingState.selectedTime}</div>
-                                 <div class="mb-2"><strong>Amount:</strong> ${bookingState.selectedService.price}</div>
+         
                                 <div><strong>Reference:</strong> ${response.booking_id || 'BK-' + Math.random().toString(36).substr(2, 8).toUpperCase()}</div>
                             `;
 

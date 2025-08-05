@@ -44,18 +44,7 @@ class FrontendController extends Controller
         $services = $category->services()
             ->where('status', 1)
             ->with('category')
-            ->get()
-            ->map(function ($service) use ($setting) {
-                if (isset($service->price)) {
-                    $service->price = Number::currency($service->price, $setting->currency);
-                }
-
-                if (isset($service->sale_price)) {
-                    $service->sale_price = Number::currency($service->sale_price, $setting->currency);
-                }
-
-                return $service;
-            });
+            ->get();
 
         return response()->json([
             'success' => true,

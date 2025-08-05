@@ -64,7 +64,6 @@ class DashboardController extends Controller
                     'description' => $appointment->notes,
                     'email' => $appointment->email,
                     'phone' => $appointment->phone,
-                    'amount' => $appointment->amount,
                     'status' => $appointment->status,
                     'staff' => $appointment->employee->user->name ?? 'Unassigned',
                     'color' => $this->getStatusColor($appointment->status),
@@ -85,7 +84,6 @@ class DashboardController extends Controller
     private function getStatusColor($status)
     {
         $colors = [
-            'Pending payment' => '#f39c12',
             'Processing' => '#3498db',
             'Confirmed' => '#2ecc71',
             'Cancelled' => '#ff0000',
@@ -104,7 +102,7 @@ class DashboardController extends Controller
     {
         $request->validate([
             'appointment_id' => 'required|exists:appointments,id',
-            'status' => 'required|in:Pending payment,Processing,Confirmed,Cancelled,Completed,On Hold,No Show'
+            'status' => 'required|in:Processing,Confirmed,Cancelled,Completed,On Hold,No Show'
         ]);
 
         $appointment = Appointment::findOrFail($request->appointment_id);

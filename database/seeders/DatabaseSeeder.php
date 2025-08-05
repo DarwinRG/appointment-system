@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
     {
         // Check if the settings table exists and is empty before seeding
         if (Schema::hasTable('settings') && Setting::count() === 0) {
-            Setting::factory()->create();
+            $setting = Setting::factory()->create();
+            // Set the website logo
+            $setting->update(['logo' => 'site-logo.png']);
         }
 
         // Check if the users table exists and is empty before creating user, permissions, and roles
@@ -124,14 +126,13 @@ class DatabaseSeeder extends Seeder
         $employee = Employee::create([
             'user_id' => $user->id,
             'days' => [
-                "monday" => ["06:00-22:00"],
-                "tuesday" => ["06:00-15:00", "16:00-22:00"],
-                "wednesday" => ["09:00-12:00", "14:00-23:00"],
-                "thursday" => ["09:00-20:00"],
-                "friday" => ["06:00-17:00"],
-                "saturday" => ["05:00-18:00"]
+                "monday" => ["09:00-16:00"],
+                "tuesday" => ["09:00-16:00"],
+                "wednesday" => ["09:00-16:00"],
+                "thursday" => ["09:00-16:00"]
+                
             ],
-            'slot_duration' => 30
+            'slot_duration' => 5
         ]);
 
         return $user;
@@ -139,95 +140,22 @@ class DatabaseSeeder extends Seeder
 
     protected function createCategoriesAndServices(User $user)
     {
-        // Create categories
-        $categories = [
-            [
-                'title' => 'Test 1',
-                'slug' => 'test1',
-                'body' => 'This is a test category for demonstration purposes.'
-            ],
-            [
-                'title' => 'Test 2',
-                'slug' => 'test2',
-                'body' => 'This is another test category for demonstration purposes.'
-            ],
-            [
-                'title' => 'Test 3',
-                'slug' => 'test3',
-                'body' => 'This is yet another test category for demonstration purposes.'
-            ]
-        ];
+        // Create single category
+        $category = Category::create([
+            'title' => 'Student ID',
+            'slug' => 'student-id',
+            'body' => 'Student ID services and related assistance.',
+            'image' => 'student-id-cat.png'
+        ]);
 
-        $services = [];
-
-        foreach ($categories as $categoryData) {
-            $category = Category::create($categoryData);
-
-            // Create 2 services for each category
-            switch ($category->title) {
-                case 'Test 1':
-                    $services = [
-                        [
-                            'title' => 'Math Tutoring',
-                            'slug' => 'math-tutoring',
-                            'price' => 500,
-                            'excerpt' => 'Personalized math lessons for all grade levels.'
-                        ],
-                        [
-                            'title' => 'Science Lab Workshop',
-                            'slug' => 'science-lab-workshop',
-                            'price' => 800,
-                            'excerpt' => 'Hands-on experiments and science exploration.'
-                        ]
-                    ];
-                    break;
-
-                case 'Test 2':
-                    $services = [
-                        [
-                            'title' => 'English Literature Class',
-                            'slug' => 'english-literature-class',
-                            'price' => 600,
-                            'excerpt' => 'Explore classic and modern literature with expert guidance.'
-                        ],
-                        [
-                            'title' => 'Creative Writing Workshop',
-                            'slug' => 'creative-writing-workshop',
-                            'price' => 700,
-                            'excerpt' => 'Develop your writing skills in a supportive environment.'
-                        ]
-                    ];
-                    break;
-
-                case 'Test 3':
-                    $services = [
-                        [
-                            'title' => 'Art & Craft Session',
-                            'slug' => 'art-craft-session',
-                            'price' => 400,
-                            'excerpt' => 'Unleash creativity with fun art and craft activities.'
-                        ],
-                        [
-                            'title' => 'Music Lessons',
-                            'slug' => 'music-lessons',
-                            'price' => 900,
-                            'excerpt' => 'Learn instruments and music theory from professionals.'
-                        ]
-                    ];
-                    break;
-            
-            }
-
-            foreach ($services as $serviceData) {
-                Service::create([
-                    'title' => $serviceData['title'],
-                    'slug' => $serviceData['slug'],
-                    'price' => $serviceData['price'],
-                    'excerpt' => $serviceData['excerpt'],
-                    'category_id' => $category->id
-                ]);
-            }
-        }
+        // Create single service for the category
+        Service::create([
+            'title' => 'ID Pick Up',
+            'slug' => 'id-pick-up',
+            'excerpt' => 'Schedule your Student ID pick up appointment.',
+            'category_id' => $category->id,
+            'image' => 'student-id-pickup.png'
+        ]);
 
         // Attach all services to the employee (not directly to user)
         if ($user->employee) {

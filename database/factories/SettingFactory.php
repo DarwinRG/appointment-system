@@ -17,11 +17,10 @@ class SettingFactory extends Factory
     public function definition(): array
     {
         return [
-            'bname' => 'Vfix Technology',
+            'bname' => 'Appointment System',
             'email' => 'admin@yourmail.com',
-            'phone' => '+91 8447 525 204',
-            'currency' => 'INR',
-            'meta_title' => 'Vfix Technology - Advance Booking System',
+            'phone' => '09762640347',
+            'meta_title' => 'Appointment System',
         ];
     }
 }

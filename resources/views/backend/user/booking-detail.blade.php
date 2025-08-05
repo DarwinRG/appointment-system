@@ -91,7 +91,7 @@
                                         <th>Booking Date</th>
                                         <th>Birth Place</th>
                                         <th>Birth Time</th>
-                                        <th>Amount</th>
+        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -106,12 +106,7 @@
                                         <td>{{ $booking->birth_place }}</td>
                                         <td>{{ $booking->birth_time }}</td>
 
-                                        @if ($booking->payment_mode == 'Razorpay')
-                                            <td>{{ Number::currency($booking->amount, 'inr') }}</td>
-                                        @endif
-                                        @if ($booking->payment_mode == 'Paypal')
-                                            <td>{{ Number::currency($booking->amount / 83, 'usd') }}</td>
-                                        @endif
+
                                     </tr>
                                 </tbody>
                             </table>
@@ -141,17 +136,7 @@
                                 <table class="table">
                                     <tbody>
 
-                                        <tr>
-                                            <th>Total:</th>
-                                            @if ($booking->payment_mode == 'Razorpay')
-                                                <td>{{ Number::currency($booking->amount, 'inr') }}</td>
-                                            @endif
 
-                                            @if ($booking->payment_mode == 'Paypal')
-                                                <td>{{ Number::currency($booking->amount / 83, 'usd') }}</td>
-                                            @endif
-
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
