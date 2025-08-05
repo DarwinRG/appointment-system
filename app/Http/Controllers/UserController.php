@@ -116,7 +116,7 @@ class UserController extends Controller
         ];
 
         // Available slot duration steps
-        $steps = ['10', '15', '20', '30', '45', '60'];
+        $steps = ['5', '10', '15', '20', '30', '45', '60'];
 
         // Available break duration steps
         $breaks = ['5', '10', '15', '20', '25', '30'];

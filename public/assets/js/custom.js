@@ -614,33 +614,104 @@
                             </div>
                         `);
 
-                        // Add each time slot
-                        const $slotsContainer = $("<div class='slots-grid'></div>");
-                        response.available_slots.forEach(slot => {
-                            const slotElement = $(`
-                            <div class="time-slot btn btn-outline-primary mb-2"
-                                data-start="${slot.start}"
-                                data-end="${slot.end}"
-                                title="Select ${slot.display}"
-                                data-time="${slot.display}">
-                                <i class="bi bi-clock me-1"></i>
-                                ${slot.display}
-                            </div>
-                        `);
+                        // Implement pagination for time slots
+                        const slotsPerPage = 12; // Show 12 slots per page
+                        const totalSlots = response.available_slots.length;
+                        const totalPages = Math.ceil(totalSlots / slotsPerPage);
+                        
+                        // Store slots data for pagination
+                        window.slotsData = {
+                            slots: response.available_slots,
+                            currentPage: 1,
+                            slotsPerPage: slotsPerPage,
+                            totalPages: totalPages
+                        };
 
-                            slotElement.on('click', function() {
-                                $(".time-slot").removeClass("selected active");
-                                $(this).addClass("selected active");
-                                bookingState.selectedTime = {
-                                    start: $(this).data('start'),
-                                    end: $(this).data('end'),
-                                    display: $(this).text()
-                                };
-                                updateBookingSummary();
+                        // Create slots container with pagination
+                        const $slotsContainer = $("<div class='slots-container'></div>");
+                        const $slotsGrid = $("<div class='slots-grid'></div>");
+                        
+                        // Function to render slots for current page
+                        function renderSlotsForPage(page) {
+                            $slotsGrid.empty();
+                            const startIndex = (page - 1) * slotsPerPage;
+                            const endIndex = startIndex + slotsPerPage;
+                            const pageSlots = response.available_slots.slice(startIndex, endIndex);
+                            
+                            pageSlots.forEach(slot => {
+                                const slotElement = $(`
+                                    <div class="time-slot btn btn-outline-primary"
+                                        data-start="${slot.start}"
+                                        data-end="${slot.end}"
+                                        title="Select ${slot.display}"
+                                        data-time="${slot.display}">
+                                        <i class="bi bi-clock me-1"></i>
+                                        ${slot.display}
+                                    </div>
+                                `);
+
+                                slotElement.on('click', function() {
+                                    $(".time-slot").removeClass("selected active");
+                                    $(this).addClass("selected active");
+                                    bookingState.selectedTime = {
+                                        start: $(this).data('start'),
+                                        end: $(this).data('end'),
+                                        display: $(this).text()
+                                    };
+                                    updateBookingSummary();
+                                });
+
+                                $slotsGrid.append(slotElement);
+                            });
+                        }
+
+                        // Render first page
+                        renderSlotsForPage(1);
+                        $slotsContainer.append($slotsGrid);
+
+                        // Add pagination controls if needed
+                        if (totalPages > 1) {
+                            const $pagination = $(`
+                                <div class="slots-pagination">
+                                    <button class="btn btn-sm btn-outline-secondary" id="prev-page" disabled>
+                                        <i class="bi bi-chevron-left"></i> Previous
+                                    </button>
+                                    <span class="page-info">Page 1 of ${totalPages}</span>
+                                    <button class="btn btn-sm btn-outline-secondary" id="next-page" ${totalPages === 1 ? 'disabled' : ''}>
+                                        Next <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            `);
+
+                            // Pagination event handlers
+                            $pagination.find("#prev-page").on('click', function() {
+                                if (window.slotsData.currentPage > 1) {
+                                    window.slotsData.currentPage--;
+                                    renderSlotsForPage(window.slotsData.currentPage);
+                                    updatePaginationControls();
+                                }
                             });
 
-                            $slotsContainer.append(slotElement);
-                        });
+                            $pagination.find("#next-page").on('click', function() {
+                                if (window.slotsData.currentPage < totalPages) {
+                                    window.slotsData.currentPage++;
+                                    renderSlotsForPage(window.slotsData.currentPage);
+                                    updatePaginationControls();
+                                }
+                            });
+
+                            function updatePaginationControls() {
+                                const currentPage = window.slotsData.currentPage;
+                                const totalPages = window.slotsData.totalPages;
+                                
+                                $pagination.find("#prev-page").prop('disabled', currentPage === 1);
+                                $pagination.find("#next-page").prop('disabled', currentPage === totalPages);
+                                $pagination.find(".page-info").text(`Page ${currentPage} of ${totalPages}`);
+                            }
+
+                            $slotsContainer.append($pagination);
+                        }
+
                         $("#time-slots-container").append($slotsContainer);
                     },
                     error: function(xhr) {

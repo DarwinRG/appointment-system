@@ -221,7 +221,7 @@
                                                 Duration</label> <small class="text-muted"> Create booking slots based on
                                                 your preferred time duration.</small>
                                             @php
-                                                $steps = ['10', '15', '20', '30', '45', '60'];
+                                                $steps = ['5', '10', '15', '20', '30', '45', '60'];
                                                 $selectedStep = old('slot_duration'); // Get the selected step value from old input
                                             @endphp
                                             <select class="form-control @error('step') is-invalid @enderror"
