@@ -23,16 +23,16 @@
     <header class="header-section shadow-sm sticky-top bg-white">
         <nav class="navbar navbar-expand-lg navbar-light py-3">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center" href="/">
+                <a class="navbar-brand d-flex align-items-center flex-shrink-0 me-2" href="/">
                     @if ($setting->logo)
-                        <img src="{{ asset('uploads/images/logo/' . $setting->logo) }}" alt="{{ $setting->bname }}" height="45" class="me-2">
+                        <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="40" width="auto" class="me-2">
                     @else
                         <i class="bi bi-calendar-check fs-3 text-primary me-2"></i>
                     @endif
-                    <span class="fw-bold">{{ $setting->bname ?? 'Appointment System' }}</span>
+                    <span class="fw-bold text-truncate">{{ $setting->bname ?? 'Appointment System' }}</span>
                 </a>
                 
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                <button class="navbar-toggler border-0 ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -65,7 +65,7 @@
                                     <div class="me-2 rounded-circle bg-light d-flex align-items-center justify-content-center" 
                                          style="width: 35px; height: 35px; overflow: hidden;">
                                         @if(Auth::user()->image)
-                                            <img src="{{ asset('uploads/images/profile/' . Auth::user()->image) }}" 
+                                            <img src="{{ asset("uploads/images/profile/{Auth::user()->image}") }}" 
                                                  alt="Profile" class="img-fluid rounded-circle">
                                         @else
                                             <i class="bi bi-person"></i>
@@ -107,7 +107,7 @@
             <div class="booking-header">
                 <h2>
                     @if ($setting->logo)
-                        <img src="{{ asset('uploads/images/logo/' . $setting->logo) }}" alt="{{ $setting->bname }}" height="50" class="me-2">
+                        <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="50" class="me-2">
                     @else
                         <i class="bi bi-calendar-check"></i>
                     @endif
