@@ -21,18 +21,18 @@
 
 <body>
     <header class="header-section shadow-sm sticky-top bg-white">
-        <nav class="navbar navbar-expand-lg navbar-light py-3">
+        <nav class="navbar navbar-expand-lg navbar-light py-2">
             <div class="container">
-                <a class="navbar-brand d-flex align-items-center flex-shrink-0 me-2" href="/">
+                <a class="navbar-brand d-flex align-items-center" href="/">
                     @if ($setting->logo)
-                        <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="40" width="auto" class="me-2">
+                        <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="36" width="auto">
                     @else
-                        <i class="bi bi-calendar-check fs-3 text-primary me-2"></i>
+                        <i class="bi bi-calendar-check fs-3 text-primary"></i>
                     @endif
-                    <span class="fw-bold text-truncate">{{ $setting->bname ?? 'Appointment System' }}</span>
+                    <span class="fw-bold ms-2 d-none d-sm-inline">{{ $setting->bname ?? 'Appointment System' }}</span>
                 </a>
                 
-                <button class="navbar-toggler border-0 ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -55,7 +55,6 @@
                                     <i class="bi bi-box-arrow-in-right me-1"></i> Login
                                 </a>
                             </li>
-                            
                         @endguest
 
                         @auth
@@ -63,7 +62,7 @@
                                 <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" 
                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     <div class="me-2 rounded-circle bg-light d-flex align-items-center justify-content-center" 
-                                         style="width: 35px; height: 35px; overflow: hidden;">
+                                         style="width: 32px; height: 32px; overflow: hidden;">
                                         @if(Auth::user()->image)
                                             <img src="{{ asset("uploads/images/profile/{Auth::user()->image}") }}" 
                                                  alt="Profile" class="img-fluid rounded-circle">
