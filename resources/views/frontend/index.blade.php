@@ -20,36 +20,82 @@
 </head>
 
 <body>
-    <header class="header-section">
-        <nav class="navbar navbar-expand-lg navbar-light">
+    <header class="header-section shadow-sm sticky-top bg-white">
+        <nav class="navbar navbar-expand-lg navbar-light py-3">
             <div class="container">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand d-flex align-items-center" href="/">
                     @if ($setting->logo)
-                        <img src="{{ asset('uploads/images/logo/' . $setting->logo) }}" alt="{{ $setting->bname }}" height="40">
+                        <img src="{{ asset('uploads/images/logo/' . $setting->logo) }}" alt="{{ $setting->bname }}" height="45" class="me-2">
                     @else
-                        <i class="bi bi-calendar-check"></i> {{ $setting->bname ?? 'Appointment System' }}
+                        <i class="bi bi-calendar-check fs-3 text-primary me-2"></i>
                     @endif
+                    <span class="fw-bold">{{ $setting->bname ?? 'Appointment System' }}</span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+                
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item">
+                            <a class="nav-link px-3 {{ request()->is('/') ? 'active fw-medium' : '' }}" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="#services">Services</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3" href="#faq">FAQ</a>
+                        </li>
+                        
                         @guest
-                            <li class="nav-item">
-                                <a class="nav-link active" href="{{ route('login') }}">Login</a>
+                            <li class="nav-item ms-lg-2">
+                                <a class="nav-link px-3" href="{{ route('login') }}">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                                </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">Register</a>
-                            </li>
+                            
                         @endguest
 
                         @auth
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                            <li class="nav-item dropdown ms-lg-2">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" 
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <div class="me-2 rounded-circle bg-light d-flex align-items-center justify-content-center" 
+                                         style="width: 35px; height: 35px; overflow: hidden;">
+                                        @if(Auth::user()->image)
+                                            <img src="{{ asset('uploads/images/profile/' . Auth::user()->image) }}" 
+                                                 alt="Profile" class="img-fluid rounded-circle">
+                                        @else
+                                            <i class="bi bi-person"></i>
+                                        @endif
+                                    </div>
+                                    <span>{{ Auth::user()->name }}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-2">
+                                    <li><a class="dropdown-item py-2" href="{{ route('dashboard') }}">
+                                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                    </a></li>
+                                    <li><a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
+                                        <i class="bi bi-person-circle me-2"></i> My Profile
+                                    </a></li>
+                                    <li><a class="dropdown-item py-2" href="{{ route('bookings.index') }}">
+                                        <i class="bi bi-calendar-check me-2"></i> My Appointments
+                                    </a></li>
+                                    <li><hr class="dropdown-divider my-1"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                                            @csrf
+                                            <a class="dropdown-item py-2 text-danger" href="{{ route('logout') }}"
+                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                            </a>
+                                        </form>
+                                    </li>
+                                </ul>
                             </li>
                         @endauth
-
                     </ul>
                 </div>
             </div>
@@ -265,10 +311,36 @@
         </div>
     </div>
 
-    <footer>
-        <div class="container pb-2">
-            <div class="row text-center">
-            <span>Designed & Developed by <a target="_blank" href="https://darwinrg.me">DarwinRG</a></span>
+    <footer class="py-2 bg-light mt-3 border-top">
+        <div class="container">
+            <div class="row g-2">
+                <!-- Company/App Info -->
+                <div class="col-md-6">
+                    <h6>{{ $setting->bname ?? 'Appointment System' }}</h6>
+                    <p class="text-muted small mb-2">Easy online appointment scheduling for your convenience.</p>
+                    <div class="d-flex gap-2 mb-2">
+                        <a href="#" class="text-decoration-none"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-decoration-none"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-decoration-none"><i class="bi bi-github"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="col-md-6">
+                    <h6>Contact Us</h6>
+                    <p class="small mb-2">If any concerns send us an email at <a href="mailto:support@example.com" class="text-decoration-none">support@example.com</a></p>
+                </div>
+            </div>
+            
+            <!-- Copyright -->
+            <div class="row">
+                <div class="col-12">
+                    <hr class="my-1">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <p class="text-muted small mb-0">&copy; {{ date('Y') }} {{ $setting->bname ?? 'Appointment System' }}. All rights reserved.</p>
+                        <p class="text-muted small mb-0">Designed by <a target="_blank" href="https://darwinrg.me" class="text-decoration-none">DarwinRG</a></p>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
@@ -288,6 +360,9 @@
                     <p>Your appointment has been successfully booked.</p>
                     <div class="alert alert-info mt-3">
                         <p class="mb-0">A confirmation email has been sent to your email address.</p>
+                    </div>
+                    <div class="alert alert-warning mt-3">
+                        <strong>Reminder:</strong> Please save a screenshot of this confirmation for your records before closing.
                     </div>
                     <div class="booking-details mt-4 text-start">
                         <h5>Booking Details:</h5>
