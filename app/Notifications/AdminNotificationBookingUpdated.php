@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class AdminNotificationBookingUpdated extends Notification implements ShouldQueue
@@ -18,8 +19,6 @@ class AdminNotificationBookingUpdated extends Notification implements ShouldQueu
     {
         $this->appointment = $appointment;
     }
-
-
 
     /**
      * Get the notification's delivery channels.
@@ -36,19 +35,51 @@ class AdminNotificationBookingUpdated extends Notification implements ShouldQueu
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
-        ->greeting('Hello Admin')
-        ->subject('Booking Status Updated for: ' . $this->appointment['name'])
-        ->line('**Booking Status Updated for:**'. ' '.$this->appointment['name'])  // make content strong
-        ->line('Name: '. $this->appointment['name'])
-        ->line('Phone: '. $this->appointment['phone'])
-        ->line('Staff: '. $this->appointment->employee->user['name'])
-        ->line('Service: '. $this->appointment->service['title'])
-        ->line('Amount: '. $this->appointment['amount'])
-        ->line('Appointment Date : ' . Carbon::parse($this->appointment['booking_date'])->format('d M Y'))
-        ->line('Slot Time: '. $this->appointment['booking_time'])
-        ->line('Status: '. $this->appointment['status'])
-        ->line('Thank you for using our application !');
+        try {
+            // Determine if appointment is an array or object
+            $isArray = is_array($this->appointment);
+            
+            $name = $isArray ? $this->appointment['name'] : $this->appointment->name;
+            $phone = $isArray ? $this->appointment['phone'] : $this->appointment->phone;
+            $status = $isArray ? $this->appointment['status'] : $this->appointment->status;
+            $service = $isArray ? 
+                ($this->appointment['service']['title'] ?? 'N/A') : 
+                ($this->appointment->service->title ?? 'N/A');
+            $staff = $isArray ? 
+                ($this->appointment['employee']['user']['name'] ?? 'N/A') : 
+                ($this->appointment->employee->user->name ?? 'N/A');
+            $bookingDate = $isArray ? 
+                $this->appointment['booking_date'] : 
+                $this->appointment->booking_date;
+            $bookingTime = $isArray ? 
+                $this->appointment['booking_time'] : 
+                $this->appointment->booking_time;
+
+            return (new MailMessage)
+                ->greeting('Hello Admin')
+                ->subject('Booking Status Updated for: ' . $name)
+                ->line('**Booking Status Updated for:** ' . $name)
+                ->line('Name: ' . $name)
+                ->line('Phone: ' . $phone)
+                ->line('Staff: ' . $staff)
+                ->line('Service: ' . $service)
+                ->line('Appointment Date: ' . Carbon::parse($bookingDate)->format('d M Y'))
+                ->line('Slot Time: ' . $bookingTime)
+                ->line('Status: ' . $status)
+                ->line('Thank you for using our application!');
+        } catch (\Exception $e) {
+            Log::error('Error sending admin booking update notification: ' . $e->getMessage(), [
+                'appointment' => $this->appointment,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            // Return a simplified email in case of error
+            return (new MailMessage)
+                ->subject('Booking Status Updated')
+                ->line('A booking status has been updated.')
+                ->line('There was an issue processing some of the booking details.')
+                ->line('Please check the booking system for complete information.');
+        }
     }
 
     /**
