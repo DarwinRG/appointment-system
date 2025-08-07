@@ -45,40 +45,40 @@
                     <div class="card py-2 px-2">
 
                         <div class="card-body p-0">
-                            <table id="myTable" class="table table-striped projects ">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 1%">
-                                            #
-                                        </th>
-                                        <th style="width: 10%">
-                                            Name
-                                        </th>
-                                        <th style="width: 10%">
-                                            Email
-                                        </th>
-                                        <th style="width: 10%">
-                                            Image
-                                        </th>
-                                        <th style="width: 10%">
-                                            Role
-                                        </th>
-                                        <th style="width: 6%">
-                                            Status
-                                        </th>
-
-                                        <th style="width: 5%">
-                                            Action
-                                        </th>
-                                    </tr>
-                                </thead>
+                            <div class="table-responsive">
+                                <table id="myTable" class="table table-striped projects">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 1%">
+                                                #
+                                            </th>
+                                            <th style="width: 10%">
+                                                Name
+                                            </th>
+                                            <th style="width: 10%">
+                                                Email
+                                            </th>
+                                            <th style="width: 10%" class="d-none-xs">
+                                                Image
+                                            </th>
+                                            <th style="width: 10%">
+                                                Role
+                                            </th>
+                                            <th style="width: 6%">
+                                                Status
+                                            </th>
+                                            <th style="width: 5%">
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
                                 <tbody>
                                     @foreach ($users as $user)
                                         <tr>
-                                            <td>
+                                            <td data-label="#">
                                                 {{ $loop->iteration }}
                                             </td>
-                                            <td>
+                                            <td data-label="Name">
                                                 <a>
                                                     {{ $user->name }}
                                                 </a>
@@ -87,45 +87,40 @@
                                                     {{ $user->created_at->diffForHumans() }}
                                                 </small>
                                             </td>
-                                             <td>{{ $user->email }}
+                                             <td data-label="Email">{{ $user->email }}
                                             </td>
-                                            <td>
+                                            <td data-label="Image" class="d-none-xs">
                                                <img style="width:50px;" class="rounded-pill" src="{{ $user->profileImage() }}" alt="">
                                             </td>
-                                            <td>
+                                            <td data-label="Role">
                                                 @foreach ($user->getRoleNames() as $role)
                                                     {{ ucfirst($role) }}@if(!$loop->last),@endif
                                                 @endforeach
                                             </td>
 
-                                            <td class="project-state">
+                                            <td data-label="Status" class="project-state">
                                                 @if ($user->status)
                                                     <span class="badge badge-success">Active</span>
                                                 @else
                                                     <span class="badge badge-danger">In-Active</span>
                                                 @endif
                                             </td>
-                                            <td class="project-actions text-right d-flex justify-content-between">
-
-                                                <div>
+                                            <td data-label="Action" class="project-actions">
+                                                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
                                                     <a class="btn btn-info btn-sm"
                                                         href="{{ route('user.edit', $user->id) }}">
-                                                        <i class="fas fa-pencil-alt">
-                                                        </i>
-                                                        Edit
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                        <span class="d-none d-sm-inline">Edit</span>
                                                     </a>
-                                                </div>
-                                                <div>
                                                     <form action="{{ route('user.destroy', $user->id) }}"
-                                                        method="post">
+                                                        method="post" class="d-inline">
                                                         @csrf
                                                         @method('delete')
                                                         <button
                                                             onclick="return confirm('Are you sure you want to delete this item?');"
                                                             type="submit" class="btn btn-danger btn-sm">
-                                                            <i class="fas fa-trash">
-                                                            </i>
-                                                            Trash
+                                                            <i class="fas fa-trash"></i>
+                                                            <span class="d-none d-sm-inline">Trash</span>
                                                         </button>
                                                     </form>
                                                 </div>
@@ -134,6 +129,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            </div>
 
                         </div>
                         <!-- /.card-body -->
@@ -163,9 +159,30 @@
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable({
-                responsive: true
+                responsive: true,
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: false,
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    infoEmpty: "Showing 0 to 0 of 0 entries",
+                    infoFiltered: "(filtered from _MAX_ total entries)",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: [3], // Image column
+                        className: 'd-none-xs'
+                    }
+                ]
             });
-
         });
     </script>
 

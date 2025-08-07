@@ -50,45 +50,46 @@
                         <div class="card py-2 px-2">
 
                             <div class="card-body p-0">
-                                <table id="myTable" class="table table-striped projects ">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 1%">
-                                                #
-                                            </th>
-                                            <th style="width: 20%">
-                                                Title
-                                            </th>
-                                            <th style="width: 10%">
-                                                Image
-                                            </th>
-                                            <th style="width: 10%">
-                                                Category
-                                            </th>
-                                            {{-- <th style="width: 10%">
-                                                Featured
-                                            </th> --}}
-                                            <th style="width: 10%" class="text-center">
-                                                Status
-                                            </th>
-                                            <th style="width: 8%">
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
+                                <div class="table-responsive">
+                                    <table id="myTable" class="table table-striped projects">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 1%">
+                                                    #
+                                                </th>
+                                                <th style="width: 20%">
+                                                    Title
+                                                </th>
+                                                <th style="width: 10%" class="d-none-xs">
+                                                    Image
+                                                </th>
+                                                <th style="width: 10%">
+                                                    Category
+                                                </th>
+                                                {{-- <th style="width: 10%">
+                                                    Featured
+                                                </th> --}}
+                                                <th style="width: 10%" class="text-center">
+                                                    Status
+                                                </th>
+                                                <th style="width: 8%">
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
                                     <tbody>
                                         <?php $i = 1; ?>
                                         @foreach ($services as $service)
                                             <tr>
-                                                <td>
+                                                <td data-label="#">
                                                     {{ $loop->iteration }}
                                                 </td>
-                                                <td>
+                                                <td data-label="Title">
                                                     <a>
                                                         {{ $service->title }}
                                                     </a>
                                                 </td>
-                                                <td>
+                                                <td data-label="Image" class="d-none-xs">
                                                     @if ($service->image)
                                                         <img style="width:75px;"
                                                             src="{{ asset('uploads/images/service/' . $service->image) }}"
@@ -99,8 +100,7 @@
                                                             alt="">
                                                     @endif
                                                 </td>
-                                                <td>
-
+                                                <td data-label="Category">
                                                     {{ $service->category->title ?? 'NA' }}
                                                 </td>
                                                 {{-- <td>
@@ -111,33 +111,29 @@
                                                     @endif
                                                 </td> --}}
 
-                                                <td class="project-state">
+                                                <td data-label="Status" class="project-state">
                                                     @if ($service->status)
                                                         <span class="badge badge-success">Active</span>
                                                     @else
                                                         <span class="badge badge-danger">Pending</span>
                                                     @endif
                                                 </td>
-                                                <td class="project-actions text-right d-flex justify-content-between">
-                                                    <div>
+                                                <td data-label="Action" class="project-actions">
+                                                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
                                                         <a class="btn btn-info btn-sm"
                                                             href="{{ route('service.edit', $service->id) }}">
-                                                            <i class="fas fa-pencil-alt">
-                                                            </i>
-                                                            Edit
+                                                            <i class="fas fa-pencil-alt"></i>
+                                                            <span class="d-none d-sm-inline">Edit</span>
                                                         </a>
-                                                    </div>
-                                                    <div>
                                                         <form action="{{ route('service.destroy', $service->id) }}"
-                                                            method="post">
+                                                            method="post" class="d-inline">
                                                             @csrf
                                                             @method('delete')
                                                             <button
                                                                 onclick="return confirm('Are you sure you want to delete this item?');"
                                                                 type="submit" class="btn btn-danger btn-sm">
-                                                                <i class="fas fa-trash">
-                                                                </i>
-                                                                Trash
+                                                                <i class="fas fa-trash"></i>
+                                                                <span class="d-none d-sm-inline">Trash</span>
                                                             </button>
                                                         </form>
                                                     </div>
@@ -146,6 +142,7 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                                </div>
 
                             </div>
                             <!-- /.card-body -->
@@ -176,9 +173,30 @@
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable({
-                responsive: true
+                responsive: true,
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: false,
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    infoEmpty: "Showing 0 to 0 of 0 entries",
+                    infoFiltered: "(filtered from _MAX_ total entries)",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: [2], // Image column
+                        className: 'd-none-xs'
+                    }
+                ]
             });
-
         });
     </script>
 

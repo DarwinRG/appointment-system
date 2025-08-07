@@ -54,7 +54,8 @@
                 <div class="card p-2">
 
                     <div id="" class="card-body p-0">
-                        <table id="myTable" class="table table-striped projects">
+                        <div class="table-responsive">
+                            <table id="myTable" class="table table-striped projects">
                             <thead>
                                 <tr>
                                     <th style="width: 1%">
@@ -103,36 +104,31 @@
                                                 <span class="badge badge-danger">In active</span>
                                             @endif
                                         </td>
-                                        <td class="project-actions text-right d-flex">
-
-                                            <div>
-                                                <a class="btn btn-info btn-sm ml-2"
+                                        <td class="project-actions">
+                                            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                                                <a class="btn btn-info btn-sm"
                                                     href="{{ route('category.edit', $category->id) }}">
-                                                    <i class="fas fa-pencil-alt">
-                                                    </i>
-                                                    Edit
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                    <span class="d-none d-sm-inline">Edit</span>
                                                 </a>
-                                            </div>
-                                            <div>
                                                 <form action="{{ route('category.destroy', $category->id) }}"
-                                                    method="POST">
+                                                    method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button
                                                         onclick="return confirm('Category cannot be delted - Post attached');"
-                                                        class="btn btn-danger btn-sm ml-2">
+                                                        class="btn btn-danger btn-sm">
                                                         <i class="fas fa-trash"></i>
-                                                        Delete
-                                                        </a>
+                                                        <span class="d-none d-sm-inline">Delete</span>
                                                     </button>
                                                 </form>
-
                                             </div>
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
                     </div>
                     <!-- /.card-body -->
                 </div>
@@ -157,9 +153,24 @@
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable({
-                responsive: true
+                responsive: true,
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: false,
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    infoEmpty: "Showing 0 to 0 of 0 entries",
+                    infoFiltered: "(filtered from _MAX_ total entries)",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                }
             });
-
         });
     </script>
 

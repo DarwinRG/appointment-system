@@ -406,3 +406,166 @@ body {
     max-width: 100%;
     height: auto;
 }
+
+/* Mobile Responsive Table Styles */
+@media (max-width: 768px) {
+    /* DataTables responsive adjustments */
+    .dataTables_wrapper .dataTables_scroll {
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+    
+    /* Table container adjustments */
+    .table-responsive {
+        border: none;
+    }
+    
+    /* Card adjustments for mobile */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 0.5rem;
+    }
+    
+    /* Table adjustments */
+    .table {
+        font-size: 0.875rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem 0.25rem;
+        vertical-align: middle;
+    }
+    
+    /* Badge adjustments */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    /* Button adjustments */
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Image adjustments in tables */
+    .table img {
+        max-width: 40px;
+        height: auto;
+    }
+    
+    /* Modal adjustments */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    /* DataTables specific mobile styles */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        text-align: left;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+    
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.25rem 0.5rem;
+        margin: 0 0.125rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 576px) {
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.25rem 0.125rem;
+    }
+    
+    .btn-sm {
+        padding: 0.125rem 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.125rem 0.25rem;
+    }
+    
+    /* Hide less important columns on very small screens */
+    .table-responsive .d-none-xs {
+        display: none !important;
+    }
+    
+    /* Stack table content vertically on very small screens */
+    .table-responsive .table-stack-xs td {
+        display: block;
+        text-align: left;
+        border: none;
+        padding: 0.25rem 0;
+    }
+    
+    .table-responsive .table-stack-xs td:before {
+        content: attr(data-label) ": ";
+        font-weight: bold;
+        display: inline-block;
+        width: 40%;
+    }
+    
+    /* Action button improvements */
+    .project-actions .d-flex {
+        gap: 0.75rem;
+        align-items: center;
+    }
+    
+    .project-actions .btn {
+        white-space: nowrap;
+        min-width: 60px;
+        margin: 0.125rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .project-actions .btn i {
+        margin-right: 0.25rem;
+    }
+    
+    .project-actions form {
+        margin: 0;
+    }
+    
+    /* Mobile button improvements */
+    @media (max-width: 576px) {
+        .project-actions .btn {
+            min-width: 50px;
+            padding: 0.25rem 0.5rem;
+            margin: 0.25rem;
+        }
+        
+        .project-actions .btn i {
+            margin-right: 0;
+        }
+        
+        .project-actions .d-flex {
+            gap: 0.5rem;
+        }
+    }
+}

@@ -85,48 +85,45 @@
                         <div class="card py-2 px-2">
 
                             <div class="card-body p-0">
-                                <table id="myTable" class="table table-striped projects ">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 1%">
-                                                #
-                                            </th>
-                                            <th style="width: 15%">
-                                                User
-                                            </th>
-                                            <th style="width: 10%">
-                                                Student ID
-                                            </th>
-                                            <th style="width: 15%">
-                                                Email
-                                            </th>
-                                            <th style="width: 10%">
-                                                Phone
-                                            </th>
-                                            <th style="width: 10%">
-                                                Staff
-                                            </th>
-
-
-                                            <th style="width: 10%">
-                                                Service
-                                            </th>
-                                            <th style="width: 10%">
-                                                Date
-                                            </th>
-                                            <th style="width: 10%">
-                                                Time
-                                            </th>
-
-
-                                            <th style="width: 15%" class="text-center">
-                                                Status
-                                            </th>
-                                            <th style="width: 18%">
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
+                                <div class="table-responsive">
+                                    <table id="myTable" class="table table-striped projects">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 1%">
+                                                    #
+                                                </th>
+                                                <th style="width: 15%">
+                                                    User
+                                                </th>
+                                                <th style="width: 10%" class="d-none-xs">
+                                                    Student ID
+                                                </th>
+                                                <th style="width: 15%" class="d-none-xs">
+                                                    Email
+                                                </th>
+                                                <th style="width: 10%" class="d-none-xs">
+                                                    Phone
+                                                </th>
+                                                <th style="width: 10%">
+                                                    Staff
+                                                </th>
+                                                <th style="width: 10%">
+                                                    Service
+                                                </th>
+                                                <th style="width: 10%">
+                                                    Date
+                                                </th>
+                                                <th style="width: 10%">
+                                                    Time
+                                                </th>
+                                                <th style="width: 15%" class="text-center">
+                                                    Status
+                                                </th>
+                                                <th style="width: 18%">
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
                                     <tbody>
                                         @php
                                             $statusColors = [
@@ -142,10 +139,10 @@
                                         @endphp
                                         @foreach ($appointments as $appointment)
                                             <tr>
-                                                <td>
+                                                <td data-label="#">
                                                     {{ $loop->iteration }}
                                                 </td>
-                                                <td>
+                                                <td data-label="User">
                                                     <a>
                                                         {{ $appointment->name }}
                                                     </a>
@@ -154,29 +151,28 @@
                                                         {{ $appointment->created_at->format('d M Y') }}
                                                     </small>
                                                 </td>
-                                                <td>
+                                                <td data-label="Student ID" class="d-none-xs">
                                                     {{ $appointment->student_id ?? 'N/A' }}
                                                 </td>
-                                                <td>
+                                                <td data-label="Email" class="d-none-xs">
                                                     {{ $appointment->email }}
                                                 </td>
-                                                <td>
+                                                <td data-label="Phone" class="d-none-xs">
                                                     {{ $appointment->phone }}
                                                 </td>
-                                                <td>
+                                                <td data-label="Staff">
                                                     {{ $appointment->employee->user->name }}
                                                 </td>
-
-                                                <td>
+                                                <td data-label="Service">
                                                     {{ $appointment->service->title ?? 'NA' }}
                                                 </td>
-                                                <td>
+                                                <td data-label="Date">
                                                     {{ $appointment->booking_date }}
                                                 </td>
-                                                <td>
+                                                <td data-label="Time">
                                                     {{ $appointment->booking_time }}
                                                 </td>
-                                                <td>
+                                                <td data-label="Status">
                                                     @php
                                                         $status = $appointment->status;
                                                         $color = $statusColors[$status] ?? '#7f8c8d';
@@ -186,7 +182,7 @@
                                                         {{ $status }}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td data-label="Action">
                                                     <button class="btn btn-primary btn-sm py-0 px-1 view-appointment-btn"
                                                         data-toggle="modal" data-target="#appointmentModal"
                                                         data-id="{{ $appointment->id }}"
@@ -205,6 +201,7 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                                </div>
 
                             </div>
                             <!-- /.card-body -->
@@ -235,9 +232,30 @@
     <script>
         $(document).ready(function() {
             $('#myTable').DataTable({
-                responsive: true
+                responsive: true,
+                scrollX: true,
+                scrollCollapse: true,
+                autoWidth: false,
+                language: {
+                    search: "Search:",
+                    lengthMenu: "Show _MENU_ entries per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    infoEmpty: "Showing 0 to 0 of 0 entries",
+                    infoFiltered: "(filtered from _MAX_ total entries)",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: [2, 3, 4], // Student ID, Email, Phone columns
+                        className: 'd-none-xs'
+                    }
+                ]
             });
-
         });
     </script>
 
