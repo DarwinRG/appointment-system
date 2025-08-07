@@ -39,6 +39,7 @@ class UserNotificationBookingUpdated extends Notification implements ShouldQueue
             
             $name = $isArray ? $this->appointment['name'] : $this->appointment->name;
             $phone = $isArray ? $this->appointment['phone'] : $this->appointment->phone;
+            $studentId = $isArray ? $this->appointment['student_id'] : $this->appointment->student_id;
             $status = $isArray ? $this->appointment['status'] : $this->appointment->status;
             $service = $isArray ? 
                 ($this->appointment['service']['title'] ?? 'N/A') : 
@@ -60,6 +61,7 @@ class UserNotificationBookingUpdated extends Notification implements ShouldQueue
                 ->line('**Appointment Details:**')
                 ->line('Name: ' . $name)
                 ->line('Phone: ' . $phone)
+                ->line('Student ID: ' . $studentId)
                 ->line('Service: ' . $service)
                 ->line('Staff: ' . $staff)
                 ->line('Appointment Date: ' . Carbon::parse($bookingDate)->format('d M Y'))

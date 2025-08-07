@@ -382,7 +382,8 @@
             <div class="col">
                 <div class="card border h-100 category-card text-center rounded p-2" data-category="${category.id}">
                     <div class="card-body">
-                         ${category.image ? `<img class="img-fluid w-25 mb-2" src="uploads/images/category/${category.image}">` : ""}
+                         <img class="img-fluid w-25 mb-2" src="${category.image ? 'uploads/images/category/' + category.image : 'uploads/images/category-default.png'}" 
+                              onerror="this.src='uploads/images/category-default.png';">
                         <h5 class="card-title">${category.title}</h5>
                         <p class="card-text">${category.body}</p>
                     </div>
@@ -686,7 +687,8 @@
                                     <div class="col animate-slide-in" style="animation-delay: ${index * 100}ms">
                                         <div class="card border h-100 service-card text-center p-2" data-service="${service.id}">
                                             <div class="card-body">
-                                                ${service.image ? `<img class="img-fluid w-25 rounded mb-2" src="uploads/images/service/${service.image}">` : ""}
+                                                <img class="img-fluid w-25 rounded mb-2" src="${service.image ? 'uploads/images/service/' + service.image : 'uploads/images/service-default.png'}" 
+                                                     onerror="this.src='uploads/images/service-default.png';">
                                                 <h5 class="card-title mb-1">${service.title}</h5>
                                                 <p class="card-text mb-1">${service.excerpt}</p>
                 
@@ -747,10 +749,8 @@
                                     <div class="card border h-100 employee-card text-center p-2" data-employee="${employee.id}">
                                         <div class="card-body">
                                             <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; overflow: hidden;">
-                                                ${employee.user.image_url ?
-                                                    `<img src="${employee.user.image_url}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">` :
-                                                    `<i class="bi bi-person text-primary" style="font-size: 2rem;"></i>`
-                                                }
+                                                <img src="${employee.user.image_url}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;" 
+                                                     onerror="this.src='uploads/images/staff-default.png';">
                                             </div>
                                             <h5 class="card-title">${employee.user.name}</h5>
                                             <p class="card-text text-muted">${employee.position || 'Staff'}</p>

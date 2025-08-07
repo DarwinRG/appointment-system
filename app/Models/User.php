@@ -82,7 +82,7 @@ class User extends Authenticatable
             }
         } else {
             // Default image if no user image is set
-            return asset('vendor/adminlte/dist/img/gravtar.jpg');
+            return asset('vendor/adminlte/dist/img/user.png');
         }
     }
 
@@ -94,7 +94,7 @@ class User extends Authenticatable
             return asset('uploads/images/profile/' . $userImage);
         }
         else{
-            return asset('vendor/adminlte/dist/img/gravtar.jpg');
+            return asset('vendor/adminlte/dist/img/user.png');
         }
     }
 
@@ -107,7 +107,7 @@ class User extends Authenticatable
             return asset('uploads/images/profile/' . $userImage);
         }
         else{
-            return asset('vendor/adminlte/dist/img/gravtar.jpg');
+            return asset('vendor/adminlte/dist/img/user.png');
         }
     }
 

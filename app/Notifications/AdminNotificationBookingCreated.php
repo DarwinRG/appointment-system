@@ -42,6 +42,7 @@ class AdminNotificationBookingCreated extends Notification implements ShouldQueu
             $name = $isArray ? $this->appointment['name'] : $this->appointment->name;
             $email = $isArray ? $this->appointment['email'] : $this->appointment->email;
             $phone = $isArray ? $this->appointment['phone'] : $this->appointment->phone;
+            $studentId = $isArray ? $this->appointment['student_id'] : $this->appointment->student_id;
             $service = $isArray ? 
                 ($this->appointment['service']['title'] ?? 'N/A') : 
                 ($this->appointment->service->title ?? 'N/A');
@@ -59,6 +60,7 @@ class AdminNotificationBookingCreated extends Notification implements ShouldQueu
                 ->line('Name: ' . $name)
                 ->line('Email: ' . $email)
                 ->line('Phone: ' . $phone)
+                ->line('Student ID: ' . $studentId)
                 ->line('Service: ' . $service)
                 ->line('Appointment Date: ' . Carbon::parse($bookingDate)->format('d M Y'))
                 ->line('Slot Time: ' . $bookingTime)

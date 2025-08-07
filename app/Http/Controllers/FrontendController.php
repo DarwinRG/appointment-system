@@ -73,7 +73,7 @@ class FrontendController extends Controller
         $employees = $employees->map(function ($employee) {
             $employee->user->image_url = $employee->user->image 
                 ? asset('uploads/images/profile/' . $employee->user->image)
-                : asset('vendor/adminlte/dist/img/gravtar.jpg');
+                : asset('uploads/images/staff-default.png');
             return $employee;
         });
 
