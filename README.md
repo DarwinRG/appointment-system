@@ -28,10 +28,11 @@ git clone https://github.com/darwinrg/appointment-system.git
 ```php
 cd appointment-system
 ```
-Install Dependencies using Easy Deploy:
+Install Dependencies:
 ```php
-php artisan easy-deploy:run
+composer install
 ```
+
 Setting Up Environment File
 ##### Rename .env.example to .env in the main directory. This file holds your app’s environment settings like database and API keys.
 ```php
@@ -40,6 +41,11 @@ cp .env.example .env
 Generate Key for project
 ```php
 php artisan key:generate
+```
+
+Easy Deploy
+```php
+php artisan easy-deploy:run
 ```
 
 2. Set up the database:
