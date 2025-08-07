@@ -265,23 +265,23 @@
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label for="customer-name" class="form-label">Full Name</label>
-                                            <input type="text" class="form-control" id="customer-name" required>
+                                            <input type="text" class="form-control" id="customer-name" placeholder="Enter your full name (e.g., JOHN A. DOE)" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-email" class="form-label">Email</label>
-                                            <input type="email" class="form-control" id="customer-email" required>
+                                            <input type="email" class="form-control" id="customer-email" placeholder="Enter your Panpacific University email address" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-student-id" class="form-label">Student ID</label>
-                                            <input type="text" class="form-control" id="customer-student-id" required>
+                                            <input type="text" class="form-control" id="customer-student-id" placeholder="Enter your student ID number" required>
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-phone" class="form-label">Phone</label>
-                                            <input type="tel" class="form-control" id="customer-phone" required>
+                                            <input type="tel" class="form-control" id="customer-phone" placeholder="Enter your phone number" required>
                                         </div>
                                         <div class="col-12">
                                             <label for="customer-notes" class="form-label">Notes (Optional)</label>
-                                            <textarea class="form-control" id="customer-notes" rows="3"></textarea>
+                                            <textarea class="form-control" id="customer-notes" rows="3" placeholder="Enter any additional notes or comments (optional)"></textarea>
                                         </div>
                                     </div>
                                 </form>
