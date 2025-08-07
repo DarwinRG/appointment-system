@@ -24,14 +24,21 @@ body {
 .booking-header {
     background: var(--primary-color);
     color: white;
-    padding: 20px;
+    padding: 15px;
     text-align: center;
+}
+
+/* Ensure logo visibility in booking header */
+.booking-header img {
+    background: white;
+    padding: 2px 6px;
+    border-radius: 3px;
 }
 
 .booking-steps {
     display: flex;
     justify-content: space-between;
-    padding: 20px;
+    padding: 15px;
     background-color: #f1f3f9;
 }
 
@@ -41,19 +48,19 @@ body {
     align-items: center;
     position: relative;
     z-index: 1;
-    margin-right: 20px;
+    margin-right: 15px;
 }
 
 .step-number {
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     background-color: #e0e0e0;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     transition: all 0.3s ease;
 }
 
@@ -84,8 +91,8 @@ body {
 }
 
 .booking-content {
-    padding: 15px;
-    min-height: 400px;
+    padding: 12px;
+    min-height: 350px;
 }
 
 
@@ -99,7 +106,7 @@ body {
 }
 
 .booking-footer {
-    padding: 20px;
+    padding: 15px;
     border-top: 1px solid #e3e6f0;
     display: flex;
     justify-content: space-between;
@@ -111,7 +118,7 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid transparent;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     height: 100%;
 }
 
@@ -309,10 +316,9 @@ body {
 @media(min-width:720px)
 {
     .booking-content {
-    padding: 30px;
-    min-height: 400px;
-}
-
+        padding: 20px;
+        min-height: 350px;
+    }
 }
 
 /* Responsive design for time slots */
@@ -356,4 +362,47 @@ body {
     .slots-pagination .page-info {
         font-size: 0.8rem;
     }
+}
+
+/* Profile Image Styles */
+.profile-user-img,
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.profile-user-img.img-fluid,
+.profile-image.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Ensure profile images maintain square aspect ratio */
+.profile-user-img.img-circle,
+.profile-image.img-circle {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+/* Frontend profile image styles */
+.navbar .profile-image {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Employee image styles */
+.employee-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.employee-image.img-fluid {
+    max-width: 100%;
+    height: auto;
 }

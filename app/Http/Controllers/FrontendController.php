@@ -69,6 +69,14 @@ class FrontendController extends Controller
             ]);
         }
 
+        // Transform employees to include proper image URLs
+        $employees = $employees->map(function ($employee) {
+            $employee->user->image_url = $employee->user->image 
+                ? asset('uploads/images/profile/' . $employee->user->image)
+                : asset('vendor/adminlte/dist/img/gravtar.jpg');
+            return $employee;
+        });
+
         return response()->json([
             'success' => true,
             'employees' => $employees,

@@ -107,9 +107,9 @@ Route::get('/employees/{employee}/availability/{date?}', [FrontendController::cl
 
 //create appointment
 Route::post('/bookings', [AppointmentController::class, 'store'])->name('bookings.store');
-Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments')->middleware('permission:appointments.view| appointments.create | services.appointments | appointments.delete');
+Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments')->middleware('permission:appointments.view');
 
-Route::post('/appointments/update-status', [AppointmentController::class, 'updateStatus'])->name('appointments.update.status');
+Route::post('/appointments/update-status', [AppointmentController::class, 'updateStatus'])->name('appointments.update.status')->middleware('permission:appointments.edit');
 
 //update status from dashbaord
 Route::post('/update-status', [DashboardController::class, 'updateStatus'])->name('dashboard.update.status');

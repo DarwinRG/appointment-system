@@ -7,6 +7,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use App\Events\BookingCreated;
 use App\Events\StatusUpdated;
+use Illuminate\Support\Facades\Auth;
 
 
 class AppointmentController extends Controller
@@ -14,8 +15,23 @@ class AppointmentController extends Controller
 
     public function index()
     {
-        $appointments = Appointment::latest()->get();
-        // dd($appointments); // for debugging only
+        $user = Auth::user();
+        
+        // Start with base query
+        $query = Appointment::query()->with(['employee.user', 'service', 'user']);
+
+        // Only admins can see all appointments
+        if (!$user->hasRole('admin')) {
+            $query->where(function($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('employee_id', $user->employee->id);
+                }
+                $q->orWhere('user_id', $user->id);
+            });
+        }
+
+        $appointments = $query->latest()->get();
+        
         return view('backend.appointment.index', compact('appointments'));
     }
 
@@ -52,18 +68,18 @@ class AppointmentController extends Controller
         //     $validated['user_id'] = auth()->id();
         // }
 
-        $isPrivilegedRole = auth()->check() && (
-            auth()->user()->hasRole('admin') ||
-            auth()->user()->hasRole('moderator') ||
-            auth()->user()->hasRole('employee')
+        $isPrivilegedRole = Auth::check() && (
+            Auth::user()->hasRole('admin') ||
+            Auth::user()->hasRole('moderator') ||
+            Auth::user()->hasRole('employee')
         );
 
             // If admin/moderator/employee is booking, user_id should be null
         if ($isPrivilegedRole) {
             $validated['user_id'] = null;
-        } elseif (auth()->check() && !$request->has('user_id')) {
+        } elseif (Auth::check() && !$request->has('user_id')) {
             // Otherwise, assign user_id to the authenticated user
-            $validated['user_id'] = auth()->id();
+            $validated['user_id'] = Auth::id();
         }
 
 
@@ -122,7 +138,14 @@ class AppointmentController extends Controller
             'status' => 'required|string',
         ]);
 
+        $user = Auth::user();
         $appointment = Appointment::findOrFail($request->appointment_id);
+        
+        // Check if user can update this appointment
+        if (!$user->hasRole('admin') && $appointment->employee_id !== $user->employee?->id) {
+            return redirect()->back()->with('error', 'You can only update your own appointments.');
+        }
+        
         $appointment->status = $request->status;
         $appointment->save();
 

@@ -326,7 +326,7 @@ return [
             'text' => ' All Appointments',
             'route' => 'appointments',
             'icon' => 'fas fa-calendar-check',
-            'can'  => 'appointments.view | appointments.create | appointments.edit | appointments.delete',
+            'can'  => 'appointments.view',
 
         ],
 

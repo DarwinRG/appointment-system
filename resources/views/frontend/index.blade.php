@@ -64,8 +64,8 @@
                                     <div class="me-2 rounded-circle bg-light d-flex align-items-center justify-content-center" 
                                          style="width: 32px; height: 32px; overflow: hidden;">
                                         @if(Auth::user()->image)
-                                            <img src="{{ asset("uploads/images/profile/{Auth::user()->image}") }}" 
-                                                 alt="Profile" class="img-fluid rounded-circle">
+                                            <img src="{{ Auth::user()->profileImage() }}" 
+                                                 alt="Profile" class="img-fluid rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
                                         @else
                                             <i class="bi bi-person"></i>
                                         @endif
@@ -98,14 +98,12 @@
     <div class="container">
         <div class="booking-container">
             <div class="booking-header">
-                <h2>
-                    @if ($setting->logo)
-                        <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="50" class="me-2">
-                    @else
-                        <i class="bi bi-calendar-check"></i>
-                    @endif
-                    {{ $setting->bname ?? 'Appointment System' }}
-                </h2>
+                @if ($setting->logo)
+                    <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="50" class="mb-3">
+                @else
+                    <i class="bi bi-calendar-check fs-1 mb-3"></i>
+                @endif
+                <h2 class="mb-3">{{ $setting->bname ?? 'Appointment System' }}</h2>
                 <p class="mb-0">Book your appointment in a few simple steps</p>
             </div>
 
@@ -688,7 +686,7 @@
                                     <div class="col animate-slide-in" style="animation-delay: ${index * 100}ms">
                                         <div class="card border h-100 service-card text-center p-2" data-service="${service.id}">
                                             <div class="card-body">
-                                                ${service.image ? `<img class="img-fluid rounded mb-2" src="uploads/images/service/${service.image}">` : ""}
+                                                ${service.image ? `<img class="img-fluid w-25 rounded mb-2" src="uploads/images/service/${service.image}">` : ""}
                                                 <h5 class="card-title mb-1">${service.title}</h5>
                                                 <p class="card-text mb-1">${service.excerpt}</p>
                 
@@ -748,14 +746,14 @@
                                 <div class="col animate-slide-in" style="animation-delay: ${index * 100}ms">
                                     <div class="card border h-100 employee-card text-center p-2" data-employee="${employee.id}">
                                         <div class="card-body">
-                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                                                ${employee.user.image ?
-                                                    `<img src="uploads/images/profile/${employee.user.image}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">` :
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; overflow: hidden;">
+                                                ${employee.user.image_url ?
+                                                    `<img src="${employee.user.image_url}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">` :
                                                     `<i class="bi bi-person text-primary" style="font-size: 2rem;"></i>`
                                                 }
                                             </div>
                                             <h5 class="card-title">${employee.user.name}</h5>
-                                            <p class="card-text text-muted">${employee.position || 'Professional'}</p>
+                                            <p class="card-text text-muted">${employee.position || 'Staff'}</p>
                                         </div>
                                     </div>
                                 </div>

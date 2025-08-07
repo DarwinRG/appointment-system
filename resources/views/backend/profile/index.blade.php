@@ -119,7 +119,15 @@
 
                         @csrf
                         @method('PUT')
-                        <input type="file" name="image" class="form-control" id="">
+                        <div class="form-group">
+                            <label for="image">Select Profile Image</label>
+                            <input type="file" name="image" class="form-control" id="image" accept="image/*">
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> 
+                                Your image will be automatically cropped to a square format for optimal display.
+                                Supported formats: JPG, PNG, WebP (Max: 2MB)
+                            </small>
+                        </div>
                         @error('image')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror

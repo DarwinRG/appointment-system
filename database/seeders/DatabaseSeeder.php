@@ -117,6 +117,16 @@ class DatabaseSeeder extends Seeder
 
         $moderatorRole->syncPermissions(Permission::whereIn('name', $moderatorPermissions)->get());
 
+        // Assign specific permissions to the 'employee' role
+        $employeePermissions = [
+            'appointments.view',
+            'appointments.create',
+            'appointments.edit',
+            'appointments.delete',
+        ];
+
+        $employeeRole->syncPermissions(Permission::whereIn('name', $employeePermissions)->get());
+
         // Assign the 'admin' role to the user
         $user->assignRole($adminRole);
 

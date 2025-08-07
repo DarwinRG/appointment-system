@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -9,7 +11,6 @@ use App\Models\User;
 use App\Models\Service;
 use App\Models\Holiday;
 use App\Models\Employee;
-use Hash;
 use Session;
 class UserController extends Controller
 {
@@ -311,6 +312,25 @@ class UserController extends Controller
                 }
             }
 
+        } else {
+            // If is_employee is not set or false, remove employee status
+            if ($user->employee) {
+                // Check if employee has any appointments
+                if ($user->employee->appointments()->count() > 0) {
+                    return redirect()->back()->withErrors(['is_employee' => 'Cannot remove employee status. User has existing appointments.']);
+                }
+
+                // Delete all holidays related to the employee
+                $user->employee->holidays()->delete();
+
+                // Detach all services related to the employee
+                if ($user->employee->services()->exists()) {
+                    $user->employee->services()->detach();
+                }
+
+                // Delete the employee record
+                $user->employee->delete();
+            }
         }
 
 
@@ -408,8 +428,8 @@ class UserController extends Controller
         // Delete the user's profile image if exists
         if ($user->image) {
             $destination = public_path('uploads/images/profile/' . $user->image);
-            if (\File::exists($destination)) {
-                \File::delete($destination);
+            if (File::exists($destination)) {
+                File::delete($destination);
             }
         }
 
@@ -448,19 +468,99 @@ class UserController extends Controller
 
         //remove old image
         $destination = public_path('uploads/images/profile/'. $user->image);
-        if(\File::exists($destination))
+        if(File::exists($destination))
         {
-            \File::delete($destination);
+            File::delete($destination);
         }
 
-        $imageName = time().'.'.$request->image->getClientOriginalExtension();
-        $request->image->move(public_path('uploads/images/profile/'),$imageName);
-        $user->update([
-            'image' => $imageName
-        ]);
-
-        return back()->withSuccess('Profile image has been updated successfully!');
-
+        // Process and crop the image to square
+        $image = $request->file('image');
+        $imageName = time().'.'.$image->getClientOriginalExtension();
+        $imagePath = public_path('uploads/images/profile/').$imageName;
+        
+        // Create image resource
+        $sourceImage = $this->createImageResource($image);
+        
+        if ($sourceImage) {
+            // Get original dimensions
+            $originalWidth = imagesx($sourceImage);
+            $originalHeight = imagesy($sourceImage);
+            
+            // Calculate square dimensions (use the smaller dimension)
+            $squareSize = min($originalWidth, $originalHeight);
+            
+            // Calculate crop position (center the crop)
+            $cropX = ($originalWidth - $squareSize) / 2;
+            $cropY = ($originalHeight - $squareSize) / 2;
+            
+            // Create square image
+            $squareImage = imagecreatetruecolor($squareSize, $squareSize);
+            
+            // Preserve transparency for PNG images
+            if ($image->getClientOriginalExtension() === 'png') {
+                imagealphablending($squareImage, false);
+                imagesavealpha($squareImage, true);
+                $transparent = imagecolorallocatealpha($squareImage, 255, 255, 255, 127);
+                imagefill($squareImage, 0, 0, $transparent);
+            }
+            
+            // Crop and resize to square
+            imagecopy($squareImage, $sourceImage, 0, 0, $cropX, $cropY, $squareSize, $squareSize);
+            
+            // Save the cropped image
+            $this->saveImage($squareImage, $imagePath, $image->getClientOriginalExtension());
+            
+            // Clean up
+            imagedestroy($sourceImage);
+            imagedestroy($squareImage);
+            
+            $user->update([
+                'image' => $imageName
+            ]);
+            
+            return back()->withSuccess('Profile image has been updated successfully!');
+        }
+        
+        return back()->withErrors(['image' => 'Failed to process image. Please try again.']);
+    }
+    
+    /**
+     * Create image resource from uploaded file
+     */
+    private function createImageResource($image)
+    {
+        $extension = strtolower($image->getClientOriginalExtension());
+        $tempPath = $image->getRealPath();
+        
+        switch ($extension) {
+            case 'jpg':
+            case 'jpeg':
+                return imagecreatefromjpeg($tempPath);
+            case 'png':
+                return imagecreatefrompng($tempPath);
+            case 'webp':
+                return imagecreatefromwebp($tempPath);
+            default:
+                return false;
+        }
+    }
+    
+    /**
+     * Save image with proper format
+     */
+    private function saveImage($imageResource, $path, $extension)
+    {
+        switch (strtolower($extension)) {
+            case 'jpg':
+            case 'jpeg':
+                return imagejpeg($imageResource, $path, 90);
+            case 'png':
+                return imagepng($imageResource, $path, 9);
+            case 'webp':
+                return imagewebp($imageResource, $path, 90);
+            default:
+                return false;
+        }
     }
 
 
@@ -468,9 +568,9 @@ class UserController extends Controller
     public function deleteProfileImage(User $user)
     {
         $destination = public_path('uploads/images/profile/'.$user->image);
-        if(\File::exists($destination))
+        if(File::exists($destination))
         {
-            \File::delete($destination);
+            File::delete($destination);
         }
 
         $user->update([
