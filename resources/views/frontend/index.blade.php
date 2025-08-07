@@ -76,12 +76,6 @@
                                     <li><a class="dropdown-item py-2" href="{{ route('dashboard') }}">
                                         <i class="bi bi-speedometer2 me-2"></i> Dashboard
                                     </a></li>
-                                    <li><a class="dropdown-item py-2" href="{{ route('profile.edit') }}">
-                                        <i class="bi bi-person-circle me-2"></i> My Profile
-                                    </a></li>
-                                    <li><a class="dropdown-item py-2" href="{{ route('bookings.index') }}">
-                                        <i class="bi bi-calendar-check me-2"></i> My Appointments
-                                    </a></li>
                                     <li><hr class="dropdown-divider my-1"></li>
                                     <li>
                                         <form method="POST" action="{{ route('logout') }}" id="logout-form">
