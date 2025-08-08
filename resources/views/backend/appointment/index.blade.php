@@ -12,6 +12,53 @@
 @stop
 
 @section('content')
+    <!-- Filter Modal (GET form) -->
+    <form id="appointmentFilterForm" method="GET" action="{{ route('appointments') }}">
+        <div class="modal fade" id="filterModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Filter Appointments</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="filterStatus">Status</label>
+                            <select name="status" id="filterStatus" class="form-control">
+                                <option value="">All</option>
+                                <option value="Processing" {{ ($activeFilters['status'] ?? '') === 'Processing' ? 'selected' : '' }}>Processing</option>
+                                <option value="Confirmed" {{ ($activeFilters['status'] ?? '') === 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                <option value="Cancelled" {{ ($activeFilters['status'] ?? '') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                <option value="Completed" {{ ($activeFilters['status'] ?? '') === 'Completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="On Hold" {{ ($activeFilters['status'] ?? '') === 'On Hold' ? 'selected' : '' }}>On Hold</option>
+                                <option value="No Show" {{ ($activeFilters['status'] ?? '') === 'No Show' ? 'selected' : '' }}>No Show</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-12 col-md-6">
+                                <label for="dateFrom">Date from</label>
+                                <input type="date" id="dateFrom" name="date_from" class="form-control" value="{{ $activeFilters['date_from'] ?? '' }}">
+                            </div>
+                            <div class="form-group col-12 col-md-6">
+                                <label for="dateTo">Date to</label>
+                                <input type="date" id="dateTo" name="date_to" class="form-control" value="{{ $activeFilters['date_to'] ?? '' }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-between flex-wrap">
+                        <a href="{{ route('appointments') }}" class="btn btn-outline-secondary mb-2 mb-sm-0">Clear</a>
+                        <div>
+                            <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
     <!-- Modal -->
     <form id="appointmentStatusForm" method="POST" action="{{ route('appointments.update.status') }}">
         @csrf
@@ -83,6 +130,43 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card py-2 px-2">
+
+                            <!-- Active Filters Summary -->
+                            @if(($activeFilters['status'] ?? '') || ($activeFilters['date_from'] ?? '') || ($activeFilters['date_to'] ?? ''))
+                                <div class="card-header bg-light border-bottom">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                        <div class="d-flex align-items-center flex-wrap">
+                                            <span class="text-muted mr-2"><i class="fas fa-filter"></i> Active Filters:</span>
+                                            <div class="d-flex flex-wrap">
+                                                @if($activeFilters['status'] ?? '')
+                                                    <span class="badge badge-primary mr-2 mb-1">
+                                                        Status: {{ $activeFilters['status'] }}
+                                                        <a href="{{ route('appointments', array_merge(request()->query(), ['status' => ''])) }}" 
+                                                           class="text-white ml-1" style="text-decoration: none;">&times;</a>
+                                                    </span>
+                                                @endif
+                                                @if($activeFilters['date_from'] ?? '')
+                                                    <span class="badge badge-info mr-2 mb-1">
+                                                        From: {{ \Carbon\Carbon::parse($activeFilters['date_from'])->format('M d, Y') }}
+                                                        <a href="{{ route('appointments', array_merge(request()->query(), ['date_from' => ''])) }}" 
+                                                           class="text-white ml-1" style="text-decoration: none;">&times;</a>
+                                                    </span>
+                                                @endif
+                                                @if($activeFilters['date_to'] ?? '')
+                                                    <span class="badge badge-info mr-2 mb-1">
+                                                        To: {{ \Carbon\Carbon::parse($activeFilters['date_to'])->format('M d, Y') }}
+                                                        <a href="{{ route('appointments', array_merge(request()->query(), ['date_to' => ''])) }}" 
+                                                           class="text-white ml-1" style="text-decoration: none;">&times;</a>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <a href="{{ route('appointments') }}" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-times"></i> Clear All
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="card-body p-0">
                                 <div class="table-responsive">
@@ -217,7 +301,42 @@
 @stop
 
 @section('css')
+<style>
+    /* Place filter button next to DataTable search and keep responsive */
+    .dataTables_filter {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        flex-wrap: wrap;
+    }
+    .dataTables_filter label {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin-bottom: 0;
+    }
+    .dataTables_filter label input[type="search"] {
+        width: auto !important;
+    }
+    .dt-filter-btn {
+        padding: .25rem .6rem;
+    }
 
+    @media (max-width: 576px) {
+        .dataTables_filter label {
+            width: 100%;
+            justify-content: space-between;
+        }
+        .dataTables_filter input[type="search"] {
+            width: 100% !important;
+            margin-top: .25rem;
+        }
+        .dt-filter-btn {
+            margin-left: 0 !important;
+        }
+
+    }
+</style>
 @stop
 
 @section('js')
@@ -231,7 +350,7 @@
 
     <script>
         $(document).ready(function() {
-            $('#myTable').DataTable({
+            var table = $('#myTable').DataTable({
                 responsive: true,
                 scrollX: true,
                 scrollCollapse: true,
@@ -256,6 +375,18 @@
                     }
                 ]
             });
+
+            // Inject Filter button beside the search box
+            var filterBtn = $('<button/>', {
+                class: 'btn btn-outline-primary btn-sm dt-filter-btn',
+                text: 'Filter',
+                click: function(e) {
+                    e.preventDefault();
+                    $('#filterModal').modal('show');
+                }
+            });
+            // Append inside the label to align with the input field
+            $('.dataTables_filter label').append(filterBtn);
         });
     </script>
 

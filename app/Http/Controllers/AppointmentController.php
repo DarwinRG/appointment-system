@@ -13,15 +13,16 @@ use Illuminate\Support\Facades\Auth;
 class AppointmentController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        /** @var \App\Models\User $user */
         
         // Start with base query
         $query = Appointment::query()->with(['employee.user', 'service', 'user']);
 
         // Only admins can see all appointments
-        if (!$user->hasRole('admin')) {
+        if (!(method_exists($user, 'hasRole') && $user->hasRole('admin'))) {
             $query->where(function($q) use ($user) {
                 if ($user->employee) {
                     $q->where('employee_id', $user->employee->id);
@@ -30,9 +31,19 @@ class AppointmentController extends Controller
             });
         }
 
+        // Apply filters (status, date range) from request
+        $this->applyAppointmentFilters($query, $request);
+
         $appointments = $query->latest()->get();
         
-        return view('backend.appointment.index', compact('appointments'));
+        // Pass current filters back to the view for UI state
+        $activeFilters = [
+            'status' => $request->input('status'),
+            'date_from' => $request->input('date_from'),
+            'date_to' => $request->input('date_to'),
+        ];
+
+        return view('backend.appointment.index', compact('appointments', 'activeFilters'));
     }
 
 
@@ -68,11 +79,14 @@ class AppointmentController extends Controller
         //     $validated['user_id'] = auth()->id();
         // }
 
-        $isPrivilegedRole = Auth::check() && (
-            Auth::user()->hasRole('admin') ||
-            Auth::user()->hasRole('moderator') ||
-            Auth::user()->hasRole('employee')
-        );
+        $isPrivilegedRole = false;
+        if (Auth::check()) {
+            $authUser = Auth::user();
+            /** @var \App\Models\User $authUser */
+            if (method_exists($authUser, 'hasAnyRole')) {
+                $isPrivilegedRole = $authUser->hasAnyRole(['admin', 'moderator', 'employee']);
+            }
+        }
 
             // If admin/moderator/employee is booking, user_id should be null
         if ($isPrivilegedRole) {
@@ -139,10 +153,11 @@ class AppointmentController extends Controller
         ]);
 
         $user = Auth::user();
+        /** @var \App\Models\User $user */
         $appointment = Appointment::findOrFail($request->appointment_id);
         
         // Check if user can update this appointment
-        if (!$user->hasRole('admin') && $appointment->employee_id !== $user->employee?->id) {
+        if (!(method_exists($user, 'hasRole') && $user->hasRole('admin')) && $appointment->employee_id !== $user->employee?->id) {
             return redirect()->back()->with('error', 'You can only update your own appointments.');
         }
         
@@ -154,4 +169,33 @@ class AppointmentController extends Controller
         return redirect()->back()->with('success', 'Appointment status updated successfully.');
     }
 
+    /**
+     * Apply query filters for appointments (status and date range)
+     */
+    private function applyAppointmentFilters($query, Request $request): void
+    {
+        $allowedStatuses = [
+            'Processing', 'Confirmed', 'Cancelled', 'Completed', 'On Hold', 'No Show'
+        ];
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+            if (in_array($status, $allowedStatuses, true)) {
+                $query->where('status', $status);
+            }
+        }
+
+        // Filter by date range (booking_date)
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
+        if ($dateFrom && $dateTo) {
+            $query->whereBetween('booking_date', [$dateFrom, $dateTo]);
+        } elseif ($dateFrom) {
+            $query->whereDate('booking_date', '>=', $dateFrom);
+        } elseif ($dateTo) {
+            $query->whereDate('booking_date', '<=', $dateTo);
+        }
+    }
 }
