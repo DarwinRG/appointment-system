@@ -90,7 +90,7 @@ class DatabaseSeeder extends Seeder
         // Create the initial admin user
         $user = User::create([
             'name' => 'Admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin@darwinrg.me',
             'phone' => '1234567890',
             'status' => 1,
             'email_verified_at' => now(),

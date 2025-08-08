@@ -18,7 +18,7 @@ class SettingFactory extends Factory
     {
         return [
             'bname' => 'Appointment System',
-            'email' => 'admin@yourmail.com',
+            'email' => 'admin@darwinrg.me',
             'phone' => '09762640347',
             'meta_title' => 'Appointment System',
         ];
