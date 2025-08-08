@@ -371,6 +371,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Safely convert plain URLs into clickable links
+            function escapeHtml(text) {
+                return String(text)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+            }
+
+            function autolink(text) {
+                const escaped = escapeHtml(text || '');
+                const urlRegex = /(https?:\/\/[^\s<]+)/g;
+                return escaped.replace(urlRegex, (url) => {
+                    const safeUrl = url.replace(/"/g, '&quot;');
+                    return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer nofollow">${url}</a>`;
+                });
+            }
 
             const categories = @json($categories);
 
@@ -690,7 +706,7 @@
                                                 <img class="img-fluid w-25 rounded mb-2" src="${service.image ? 'uploads/images/service/' + service.image : 'uploads/images/service-default.png'}" 
                                                      onerror="this.src='uploads/images/service-default.png';">
                                                 <h5 class="card-title mb-1">${service.title}</h5>
-                                                <p class="card-text mb-1">${service.excerpt}</p>
+                                                <p class="card-text mb-1">${autolink(service.excerpt || '')}</p>
                 
                                             </div>
                                         </div>
