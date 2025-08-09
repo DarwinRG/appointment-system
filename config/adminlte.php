@@ -329,6 +329,12 @@ return [
             'can'  => 'appointments.view',
 
         ],
+        [
+            'text' => 'Monitor',
+            'route' => 'appointments.monitor',
+            'icon' => 'fas fa-chart-pie',
+            'can'  => 'appointments.view',
+        ],
 
         [
             'text' => 'Categories',

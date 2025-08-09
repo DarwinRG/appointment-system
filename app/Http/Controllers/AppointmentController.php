@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use Carbon\Carbon;
+use App\Models\Category;
+use App\Models\Service;
 
 
 class AppointmentController extends Controller
@@ -28,9 +30,9 @@ class AppointmentController extends Controller
         if (!(method_exists($user, 'hasRole') && $user->hasRole('admin'))) {
             $query->where(function($q) use ($user) {
                 if ($user->employee) {
-                    $q->where('employee_id', $user->employee->id);
+                    $q->where('appointments.employee_id', $user->employee->id);
                 }
-                $q->orWhere('user_id', $user->id);
+                $q->orWhere('appointments.user_id', $user->id);
             });
         }
 
@@ -266,5 +268,95 @@ class AppointmentController extends Controller
         } elseif ($dateTo) {
             $query->whereDate('booking_date', '<=', $dateTo);
         }
+    }
+
+    public function monitor(Request $request)
+    {
+        $user = Auth::user();
+        /** @var \App\Models\User $user */
+
+        $query = Appointment::query();
+        if (!(method_exists($user, 'hasRole') && $user->hasRole('admin'))) {
+            $query->where(function($q) use ($user) {
+                if ($user->employee) {
+                    $q->where('appointments.employee_id', $user->employee->id);
+                }
+                $q->orWhere('appointments.user_id', $user->id);
+            });
+        }
+
+        $status = $request->input('status');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+        $categoryId = $request->input('category_id');
+        $serviceId = $request->input('service_id');
+
+        if ($status) {
+            $query->where('appointments.status', $status);
+        }
+        if ($dateFrom && $dateTo) {
+            $query->whereBetween('appointments.booking_date', [$dateFrom, $dateTo]);
+        } elseif ($dateFrom) {
+            $query->whereDate('appointments.booking_date', '>=', $dateFrom);
+        } elseif ($dateTo) {
+            $query->whereDate('appointments.booking_date', '<=', $dateTo);
+        }
+        if ($serviceId) {
+            $query->where('appointments.service_id', $serviceId);
+        }
+        if ($categoryId) {
+            $serviceIdsInCategory = Service::where('category_id', $categoryId)->pluck('id');
+            $query->whereIn('service_id', $serviceIdsInCategory);
+        }
+
+        $filtered = (clone $query);
+
+        $statusCounts = (clone $filtered)
+            ->select(DB::raw('appointments.status as status'), DB::raw('COUNT(*) as total'))
+            ->groupBy('appointments.status')
+            ->pluck('total', 'status');
+
+        $serviceCounts = (clone $filtered)
+            ->join('services', 'appointments.service_id', '=', 'services.id')
+            ->select('services.title as name', DB::raw('COUNT(*) as total'))
+            ->groupBy('services.title')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->get();
+
+        $categoryCounts = (clone $filtered)
+            ->join('services', 'appointments.service_id', '=', 'services.id')
+            ->join('categories', 'services.category_id', '=', 'categories.id')
+            ->select('categories.title as name', DB::raw('COUNT(*) as total'))
+            ->groupBy('categories.title')
+            ->orderByDesc('total')
+            ->get();
+
+        // Staff counts (by employee user name)
+        $staffCounts = (clone $filtered)
+            ->join('employees', 'appointments.employee_id', '=', 'employees.id')
+            ->join('users', 'employees.user_id', '=', 'users.id')
+            ->select('users.name as name', DB::raw('COUNT(*) as total'))
+            ->groupBy('users.name')
+            ->orderByDesc('total')
+            ->limit(12)
+            ->get();
+
+        $totalCount = (clone $filtered)->count();
+
+        $categories = Category::orderBy('title')->get();
+        $services = Service::orderBy('title')->get();
+
+        $activeFilters = [
+            'status' => $status,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+            'category_id' => $categoryId,
+            'service_id' => $serviceId,
+        ];
+
+        return view('backend.monitor.index', compact(
+            'statusCounts', 'serviceCounts', 'categoryCounts', 'staffCounts', 'totalCount', 'categories', 'services', 'activeFilters'
+        ));
     }
 }

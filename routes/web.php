@@ -14,9 +14,10 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DashboardController;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
-Auth::routes();
+Auth::routes(['register' => false]);
 
 Route::get('/',[FrontendController::class,'index'])->name('home');
 
@@ -108,6 +109,7 @@ Route::get('/employees/{employee}/availability/{date?}', [FrontendController::cl
 //create appointment
 Route::post('/bookings', [AppointmentController::class, 'store'])->name('bookings.store');
 Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments')->middleware('permission:appointments.view');
+Route::get('/appointments/monitor', [AppointmentController::class, 'monitor'])->name('appointments.monitor')->middleware('permission:appointments.view');
 
 Route::post('/appointments/update-status', [AppointmentController::class, 'updateStatus'])->name('appointments.update.status')->middleware('permission:appointments.edit');
 

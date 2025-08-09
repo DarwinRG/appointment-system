@@ -17,6 +17,19 @@
     @if ($setting->header)
         {!! $setting->header !!}
     @endif
+    <style>
+        /* Slots grid and pagination */
+        .slots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .5rem; }
+        .time-slot { white-space: nowrap; }
+        .slots-pagination { display: flex; align-items: center; justify-content: space-between; margin-top: .5rem; }
+
+        /* Live summary (mobile bottom, desktop inline) */
+        .live-summary { font-size: .9rem; }
+        .live-summary .badge { font-weight: 500; }
+        @media (max-width: 576px) {
+            .live-summary { width: 100%; }
+        }
+    </style>
 </head>
 
 <body>
@@ -25,7 +38,7 @@
             <div class="container">
                 <a class="navbar-brand d-flex align-items-center" href="/">
                     @if ($setting->logo)
-                        <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="36" width="auto">
+                        <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="36" width="auto" loading="lazy">
                     @else
                         <i class="bi bi-calendar-check fs-3 text-primary"></i>
                     @endif
@@ -99,7 +112,7 @@
         <div class="booking-container">
             <div class="booking-header">
                 @if ($setting->logo)
-                    <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="50" class="mb-3">
+                    <img src="{{ asset("uploads/images/logo/{$setting->logo}") }}" alt="{{ $setting->bname }}" height="50" class="mb-3" loading="lazy">
                 @else
                     <i class="bi bi-calendar-check fs-1 mb-3"></i>
                 @endif
@@ -134,6 +147,14 @@
             </div>
 
             <div class="booking-content">
+                <!-- Live Summary (desktop inline, mobile above footer) -->
+                <div class="alert alert-light border live-summary mb-3" id="live-summary" role="status" aria-live="polite">
+                    <span class="me-2"><i class="bi bi-clipboard-check text-primary"></i></span>
+                    <span>Service: <span class="badge text-bg-secondary" id="sumService">—</span></span>
+                    <span class="ms-2">Staff: <span class="badge text-bg-secondary" id="sumStaff">—</span></span>
+                    <span class="ms-2">Date: <span class="badge text-bg-secondary" id="sumDate">—</span></span>
+                    <span class="ms-2">Time: <span class="badge text-bg-secondary" id="sumTime">—</span></span>
+                </div>
                 <!-- Step 1: Category Selection -->
                 <div class="booking-step active" id="step1">
                     <h3 class="mb-4">Select a Category</h3>
@@ -202,7 +223,7 @@
                                     <div id="selected-date-display" class="text-muted small"></div>
                                 </div>
                                 <div class="card-body">
-                                    <div id="time-slots-container" class="d-flex flex-wrap">
+                                    <div id="time-slots-container" class="d-flex flex-column">
                                         <!-- Time slots will be loaded dynamically -->
                                         <div class="text-center text-muted w-100 py-4">
                                             Please select a date to view available times
@@ -260,24 +281,24 @@
 
                             <div class="mt-4">
                                 <h5>Your Information</h5>
-                                <form id="customer-info-form">
+                                <form id="customer-info-form" autocomplete="on" novalidate>
                                     @csrf
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label for="customer-name" class="form-label">Full Name</label>
-                                            <input type="text" class="form-control" id="customer-name" placeholder="Enter your full name (e.g., JOHN A. DOE)" required>
+                                            <input type="text" class="form-control" id="customer-name" placeholder="Enter your full name (e.g., JOHN A. DOE)" required maxlength="120" autocomplete="name">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-email" class="form-label">Email</label>
-                                            <input type="email" class="form-control" id="customer-email" placeholder="Enter your Panpacific University email address" required>
+                                            <input type="email" class="form-control" id="customer-email" inputmode="email" placeholder="Enter your Panpacific University email address" required maxlength="120" autocomplete="email">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-student-id" class="form-label">Student ID</label>
-                                            <input type="text" class="form-control" id="customer-student-id" placeholder="Enter your student ID number" required>
+                                            <input type="text" class="form-control" id="customer-student-id" placeholder="Enter your student ID number" required maxlength="50" autocomplete="off">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-phone" class="form-label">Phone</label>
-                                            <input type="tel" class="form-control" id="customer-phone" placeholder="Enter your phone number" required>
+                                            <input type="tel" class="form-control" id="customer-phone" placeholder="Enter your phone number" required maxlength="20" autocomplete="tel" pattern="^[0-9+\-()\s]{6,20}$">
                                         </div>
                                         <div class="col-12">
                                             <label for="customer-notes" class="form-label">Notes (Optional)</label>
@@ -358,6 +379,14 @@
                     <div class="booking-details mt-4 text-start">
                         <h5>Booking Details:</h5>
                         <div id="modal-booking-details"></div>
+                        <div id="bookingActionButtons" class="mt-3 d-flex flex-wrap gap-2">
+                            <a id="addToGoogleCalendar" target="_blank" rel="noopener" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-google"></i> Add to Google Calendar
+                            </a>
+                            <button id="downloadBookingImage" type="button" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-download"></i> Download
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -369,8 +398,35 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Utilities for calendar links
+            function pad2(n) { return n.toString().padStart(2, '0'); }
+            function addMinutesToHHmm(hhmm, minutes) {
+                if (!hhmm) return null;
+                const [h, m] = hhmm.split(':').map(Number);
+                const d = new Date(2000, 0, 1, h, m, 0);
+                d.setMinutes(d.getMinutes() + (Number(minutes) || 0));
+                return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+            }
+            function parse12hToHHmm(text) {
+                if (!text) return null;
+                const m = text.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+                if (!m) return null;
+                let hour = parseInt(m[1], 10);
+                const minute = parseInt(m[2], 10);
+                const ampm = m[3].toUpperCase();
+                if (ampm === 'PM' && hour !== 12) hour += 12;
+                if (ampm === 'AM' && hour === 12) hour = 0;
+                return `${pad2(hour)}:${pad2(minute)}`;
+            }
+            function buildCalDateLocal(dateStr, hhmm) {
+                if (!dateStr || !hhmm) return null;
+                const [y, m, d] = dateStr.split('-').map(Number);
+                const [hh, mm] = hhmm.split(':').map(Number);
+                return `${y}${pad2(m)}${pad2(d)}T${pad2(hh)}${pad2(mm)}00`;
+            }
             // Safely convert plain URLs into clickable links
             function escapeHtml(text) {
                 return String(text)
@@ -398,8 +454,8 @@
             <div class="col">
                 <div class="card border h-100 category-card text-center rounded p-2" data-category="${category.id}">
                     <div class="card-body">
-                         <img class="img-fluid w-25 mb-2" src="${category.image ? 'uploads/images/category/' + category.image : 'uploads/images/category-default.png'}" 
-                              onerror="this.src='uploads/images/category-default.png';">
+                          <img class="img-fluid w-25 mb-2" src="${category.image ? 'uploads/images/category/' + category.image : 'uploads/images/category-default.png'}" 
+                               loading="lazy" onerror="this.src='uploads/images/category-default.png';">
                         <h5 class="card-title">${category.title}</h5>
                         <p class="card-text">${category.body}</p>
                     </div>
@@ -532,6 +588,10 @@
 
                 bookingState.selectedEmployee = employee;
 
+                // Update summary badges for service/staff immediately
+                $('#sumService').text(bookingState.selectedService ? bookingState.selectedService.title : '—');
+                $('#sumStaff').text(employee?.user?.name || '—');
+
                 // Reset subsequent selections
                 bookingState.selectedDate = null;
                 bookingState.selectedTime = null;
@@ -556,13 +616,16 @@
                 updateTimeSlots(date);
             });
 
-            // Time slot selection
+            // Time slot selection (delegated, ensure object shape)
             $(document).on("click", ".time-slot:not(.disabled)", function() {
-                $(".time-slot").removeClass("selected");
-                $(this).addClass("selected");
-
-                const time = $(this).data("time");
-                bookingState.selectedTime = time;
+                $(".time-slot").removeClass("selected active");
+                $(this).addClass("selected active");
+                bookingState.selectedTime = {
+                    start: $(this).data('start') || null,
+                    end: $(this).data('end') || null,
+                    display: $(this).data('time') || $(this).text().trim()
+                };
+                updateSummary();
             });
 
             // Calendar navigation
@@ -639,6 +702,9 @@
                 } else {
                     $("#next-step").html('Next <i class="bi bi-arrow-right"></i>');
                 }
+
+                // Keep live summary updated whenever navigation changes
+                updateSummary();
             }
 
 
@@ -709,7 +775,7 @@
                                         <div class="card border h-100 service-card text-center p-2" data-service="${service.id}">
                                             <div class="card-body">
                                                 <img class="img-fluid w-25 rounded mb-2" src="${service.image ? 'uploads/images/service/' + service.image : 'uploads/images/service-default.png'}" 
-                                                     onerror="this.src='uploads/images/service-default.png';">
+                                                     loading="lazy" onerror="this.src='uploads/images/service-default.png';">
                                                 <h5 class="card-title mb-1">${service.title}</h5>
                                                 <p class="card-text mb-1">${autolink(service.excerpt || '')}</p>
                 
@@ -771,7 +837,7 @@
                                         <div class="card-body">
                                             <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px; overflow: hidden;">
                                                 <img src="${employee.user.image_url}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;" 
-                                                     onerror="this.src='uploads/images/staff-default.png';">
+                                                     loading="lazy" onerror="this.src='uploads/images/staff-default.png';">
                                             </div>
                                             <h5 class="card-title">${employee.user.name}</h5>
                                             <p class="card-text text-muted">${employee.position || 'Staff'}</p>
@@ -1031,9 +1097,9 @@
                                     bookingState.selectedTime = {
                                         start: $(this).data('start'),
                                         end: $(this).data('end'),
-                                        display: $(this).text()
+                                        display: $(this).data('time') || $(this).text().trim()
                                     };
-                                    updateBookingSummary();
+                                    updateSummary();
                                 });
 
                                 $slotsGrid.append(slotElement);
@@ -1137,6 +1203,14 @@
                     $("#summary-datetime").text(
                         `${formattedDate} at ${bookingState.selectedTime.display || bookingState.selectedTime}`);
                 }
+
+                // Live summary badges update
+                if (bookingState.selectedDate) {
+                    $('#sumDate').text(new Date(bookingState.selectedDate).toLocaleDateString());
+                }
+                if (bookingState.selectedTime) {
+                    $('#sumTime').text(bookingState.selectedTime.display || bookingState.selectedTime);
+                }
             }
 
 
@@ -1159,7 +1233,7 @@
                     notes: $('#customer-notes').val(),
                     
                     booking_date: bookingState.selectedDate,
-                    booking_time: bookingState.selectedTime.start || bookingState.selectedTime,
+                    booking_time: bookingState.selectedTime?.display || bookingState.selectedTime,
                                             status: 'Processing',
                     _token: csrfToken // Include CSRF token in payload
                 };
@@ -1202,9 +1276,69 @@
 
                         $('#modal-booking-details').html(bookingDetails);
 
+                        // Build calendar links (local times, no timezone shift)
+                        try {
+                            let startHHmm = bookingState.selectedTime.start;
+                            let endHHmm = bookingState.selectedTime.end;
+                            if (!startHHmm || !endHHmm) {
+                                const display = bookingState.selectedTime.display || '';
+                                const parts = display.split('-');
+                                const start12h = parts[0]?.trim();
+                                const end12h = parts[1]?.trim();
+                                startHHmm = startHHmm || parse12hToHHmm(start12h);
+                                endHHmm = endHHmm || parse12hToHHmm(end12h);
+                            }
+                            // If still missing end, compute from slot_duration
+                            if (!endHHmm && startHHmm) {
+                                endHHmm = addMinutesToHHmm(startHHmm, bookingState.selectedEmployee?.slot_duration || 30);
+                            }
+
+                            const startLocal = buildCalDateLocal(bookingState.selectedDate, startHHmm);
+                            const endLocal = buildCalDateLocal(bookingState.selectedDate, endHHmm);
+                            const title = encodeURIComponent(`${bookingState.selectedService.title} with ${bookingState.selectedEmployee.user.name}`);
+                            const details = encodeURIComponent('Panpacific University Appointment');
+                            const location = encodeURIComponent('Panpacific University');
+                            const gcal = `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startLocal}%2F${endLocal}&details=${details}&location=${location}`;
+                            $('#addToGoogleCalendar').attr('href', gcal);
+
+                        } catch (e) {
+                            console.warn('Calendar links error', e);
+                        }
+
                         // Show success modal
                         const successModal = new bootstrap.Modal('#bookingSuccessModal');
                         successModal.show();
+
+                        // Bind download image button
+                        setTimeout(() => {
+                            $('#downloadBookingImage').off('click').on('click', function() {
+                                const modalContent = document.querySelector('#bookingSuccessModal .modal-content');
+                                const actionButtons = document.getElementById('bookingActionButtons');
+                                if (!modalContent) return;
+
+                                // Temporarily hide action buttons and footer buttons
+                                const footer = document.querySelector('#bookingSuccessModal .modal-footer');
+                                const prevDisplayButtons = actionButtons ? actionButtons.style.display : '';
+                                const prevDisplayFooter = footer ? footer.style.display : '';
+                                if (actionButtons) actionButtons.style.display = 'none';
+                                if (footer) footer.style.display = 'none';
+
+                                html2canvas(modalContent, { backgroundColor: '#ffffff', scale: 2 }).then(canvas => {
+                                    // Restore
+                                    if (actionButtons) actionButtons.style.display = prevDisplayButtons;
+                                    if (footer) footer.style.display = prevDisplayFooter;
+
+                                    const link = document.createElement('a');
+                                    link.download = `${response.booking_id || 'booking'}.png`;
+                                    link.href = canvas.toDataURL('image/png');
+                                    link.click();
+                                }).catch(err => {
+                                    if (actionButtons) actionButtons.style.display = prevDisplayButtons;
+                                    if (footer) footer.style.display = prevDisplayFooter;
+                                    console.warn('Capture failed', err);
+                                });
+                            });
+                        }, 100);
 
                         // Reset form after delay
                         setTimeout(resetBooking, 1000);

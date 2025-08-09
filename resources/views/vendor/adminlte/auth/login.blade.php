@@ -106,7 +106,8 @@
         </p>
     @endif
 
-    {{-- Register link --}}
+    {{-- Register link (temporarily disabled) --}}
+    {{--
     @if($register_url)
         <p class="my-0">
             <a href="{{ $register_url }}">
@@ -114,4 +115,5 @@
             </a>
         </p>
     @endif
+    --}}
 @stop

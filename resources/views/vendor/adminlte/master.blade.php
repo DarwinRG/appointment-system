@@ -97,13 +97,10 @@
 
 
    <footer class="main-footer @if(Route::is('login','register','password.confirm','password.update','password.reset','password.request')) mx-auto mt-5 @endif ">
-    <strong>© Copyright {{ date('Y') }}, Developed by
-      <a target="_blank" href="https://darwinrg.me">DarwinRG</a>.
-    <span style="display: block; border-top: 1px solid #dee2e6; margin: 1rem 0;"></span>
-    </strong>
-    All rights reserved.
-    <div class="float-right d-none d-sm-inline-block">
-                      <b>Version</b> 2.2.1
+    <div class="w-100 text-center">
+        <small>© Copyright {{ date('Y') }}, Developed by
+            <a target="_blank" href="https://darwinrg.me">DarwinRG</a>.
+        </small>
     </div>
   </footer>
 

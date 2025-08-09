@@ -182,13 +182,14 @@
                 header: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'month,agendaDay'
+                    right: 'month,agendaWeek,agendaDay'
                 },
-                defaultView: 'month',
+                defaultView: 'agendaWeek',
                 editable: false,
                 slotDuration: '00:30:00',
                 minTime: '06:00:00',
                 maxTime: '22:00:00',
+                eventLimit: true,
                 events: @json($appointments ?? []),
                 eventRender: function(event, element) {
                     element.tooltip({

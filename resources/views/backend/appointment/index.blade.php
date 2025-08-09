@@ -74,7 +74,8 @@
                         </button>
                     </div>
 
-                    <div class="modal-body">
+                        <div class="modal-body">
+                        <p><strong>Reference:</strong> <span id="modalReference">N/A</span></p>
                         <p><strong>Client:</strong> <span id="modalAppointmentName">N/A</span></p>
                         <p><strong>Student ID:</strong> <span id="modalStudentId">N/A</span></p>
                         <p><strong>Service:</strong> <span id="modalService">N/A</span></p>
@@ -173,9 +174,7 @@
                                     <table id="myTable" class="table table-striped projects">
                                         <thead>
                                             <tr>
-                                                <th style="width: 1%">
-                                                    #
-                                                </th>
+                                                <th style="width: 1%">#</th>
                                                 <th style="width: 15%">
                                                     User
                                                 </th>
@@ -223,9 +222,7 @@
                                         @endphp
                                         @foreach ($appointments as $appointment)
                                             <tr>
-                                                <td data-label="#">
-                                                    {{ $loop->iteration }}
-                                                </td>
+                                                <td data-label="#">{{ $loop->iteration }}</td>
                                                 <td data-label="User">
                                                     <a>
                                                         {{ $appointment->name }}
@@ -265,11 +262,24 @@
                                                         style="background-color: {{ $color }}; color: white;">
                                                         {{ $status }}
                                                     </span>
+                                                    <form method="POST" action="{{ route('appointments.update.status') }}" class="mt-1 d-inline-block d-print-none">
+                                                        @csrf
+                                                        <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
+                                                        <select name="status" class="form-control form-control-sm inline-status-select" style="min-width: 110px; padding-top: 1px; padding-bottom: 1px; height: calc(1.5em + .5rem + 2px); font-size: .82rem;">
+                                                            <option value="Processing" {{ $appointment->status === 'Processing' ? 'selected' : '' }}>Processing</option>
+                                                            <option value="Confirmed" {{ $appointment->status === 'Confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                                            <option value="Cancelled" {{ $appointment->status === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                            <option value="Completed" {{ $appointment->status === 'Completed' ? 'selected' : '' }}>Completed</option>
+                                                            <option value="On Hold" {{ $appointment->status === 'On Hold' ? 'selected' : '' }}>On Hold</option>
+                                                            <option value="No Show" {{ $appointment->status === 'No Show' ? 'selected' : '' }}>No Show</option>
+                                                        </select>
+                                                    </form>
                                                 </td>
                                                 <td data-label="Action">
                                                     <button class="btn btn-primary btn-sm py-0 px-1 view-appointment-btn"
                                                         data-toggle="modal" data-target="#appointmentModal"
                                                         data-id="{{ $appointment->id }}"
+                                                         data-booking-id="{{ $appointment->booking_id }}"
                                                         data-name="{{ $appointment->name }}"
                                                         data-student-id="{{ $appointment->student_id ?? 'N/A' }}"
                                                         data-service="{{ $appointment->service->title ?? 'MA' }}"
@@ -355,6 +365,8 @@
                 scrollX: true,
                 scrollCollapse: true,
                 autoWidth: false,
+                stateSave: true,
+                order: [[0, 'asc']],
                 language: {
                     search: "Search:",
                     lengthMenu: "Show _MENU_ entries per page",
@@ -376,6 +388,17 @@
                 ]
             });
 
+            // Inline status auto-submit with confirm
+            $(document).on('change', '.inline-status-select', function () {
+                var form = $(this).closest('form');
+                if (confirm('Update status for this appointment?')) {
+                    form.submit();
+                } else {
+                    // revert selection by reloading state from table row dataset
+                    table.draw(false);
+                }
+            });
+
             // Inject Filter button beside the search box
             var filterBtn = $('<button/>', {
                 class: 'btn btn-outline-primary btn-sm dt-filter-btn',
@@ -387,6 +410,12 @@
             });
             // Append inside the label to align with the input field
             $('.dataTables_filter label').append(filterBtn);
+
+            // Populate modal including reference when viewing
+            $(document).on('click', '.view-appointment-btn', function(){
+                var ref = $(this).data('booking-id');
+                $('#modalReference').text(ref || 'N/A');
+            });
         });
     </script>
 
