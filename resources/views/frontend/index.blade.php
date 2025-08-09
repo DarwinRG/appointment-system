@@ -319,7 +319,7 @@
                 <!-- Contact Information -->
                 <div class="col-md-6">
                     <h6>Contact Us</h6>
-                    <p class="small mb-2">If any concerns send us an email at <a href="mailto:support@example.com" class="text-decoration-none">support@example.com</a></p>
+                    <p class="small mb-2">If any concerns send us an email at <a href="mailto:admin@darwinrg.me" class="text-decoration-none">admin@darwinrg.me</a></p>
                 </div>
             </div>
             
@@ -611,6 +611,11 @@
                 $(".booking-container")[0].scrollIntoView({
                     behavior: "smooth"
                 });
+
+                // If returning to time selection step, refresh availability for the selected date
+                if (step === 4 && bookingState.selectedEmployee && bookingState.selectedDate) {
+                    updateTimeSlots(bookingState.selectedDate);
+                }
             }
 
 
@@ -948,8 +953,10 @@
                     </div>
                 `);
 
+                const cacheBuster = Date.now();
                 $.ajax({
-                    url: `/employees/${employeeId}/availability/${apiDate}`,
+                    url: `/employees/${employeeId}/availability/${apiDate}?_=${cacheBuster}`,
+                    cache: false,
                     success: function(response) {
                         $("#time-slots-container").empty();
 
@@ -1212,6 +1219,11 @@
                         }
 
                         alert(errorMessage);
+                        // If the selected slot was taken in the meantime, go back to time selection and refresh
+                        if (xhr.status === 422 && /slot/i.test(errorMessage)) {
+                            bookingState.selectedTime = null;
+                            goToStep(4);
+                        }
                         nextBtn.prop('disabled', false).html(
                             'Confirm Booking <i class="bi bi-check-circle"></i>');
                     },

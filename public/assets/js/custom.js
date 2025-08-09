@@ -222,6 +222,11 @@
                 $(".booking-container")[0].scrollIntoView({
                     behavior: "smooth"
                 });
+
+                // If returning to time selection step, refresh availability for the selected date
+                if (step === 4 && bookingState.selectedEmployee && bookingState.selectedDate) {
+                    updateTimeSlots(bookingState.selectedDate);
+                }
             }
 
 
@@ -559,8 +564,11 @@
                     </div>
                 `);
 
+                // Add cache buster to avoid stale GET caching
+                const cacheBuster = Date.now();
                 $.ajax({
-                    url: `/employees/${employeeId}/availability/${apiDate}`,
+                    url: `/employees/${employeeId}/availability/${apiDate}?_=${cacheBuster}`,
+                    cache: false,
                     success: function(response) {
                         $("#time-slots-container").empty();
 
@@ -821,6 +829,11 @@
                         }
 
                         alert(errorMessage);
+                        // If the selected slot was taken in the meantime, take user back to time selection and refresh
+                        if (xhr.status === 422 && /slot/i.test(errorMessage)) {
+                            bookingState.selectedTime = null;
+                            goToStep(4); // will trigger updateTimeSlots via goToStep hook
+                        }
                         nextBtn.prop('disabled', false).html(
                             'Confirm Booking <i class="bi bi-check-circle"></i>');
                     },

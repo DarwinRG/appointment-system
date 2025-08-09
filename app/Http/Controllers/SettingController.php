@@ -26,7 +26,6 @@ class SettingController extends Controller
             'bname'                 => 'required|string|max:200',
             'email'                 => 'nullable|email|max:200',
             'phone'                 => 'nullable|string|max:20',
-            'whatsapp'              => 'nullable|string|max:20',
             'address'               => 'nullable|string|max:255',
             'logo'                  => 'nullable|image|mimes:jpg,png,jpeg,gif,svg,webp|max:2048',
             'meta_title'            => 'nullable|string|max:255',

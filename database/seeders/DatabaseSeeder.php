@@ -130,19 +130,29 @@ class DatabaseSeeder extends Seeder
         // Assign the 'admin' role to the user
         $user->assignRole($adminRole);
 
+        // Create DarwinRG as employee user
+        $employeeUser = User::create([
+            'name' => 'DarwinRG',
+            'email' => 'darwinrguillermo11@gmail.com',
+            'phone' => '09762640347',
+            'status' => 1,
+            'email_verified_at' => now(),
+            'password' => Hash::make('pcst2526'),
+        ]);
 
+        // Assign employee role
+        $employeeUser->assignRole($employeeRole);
 
-         // Create admin as employee with additional details
-        $employee = Employee::create([
-            'user_id' => $user->id,
+        // Create employee profile for DarwinRG with schedule
+        Employee::create([
+            'user_id' => $employeeUser->id,
             'days' => [
-                "monday" => ["09:00-16:00"],
-                "tuesday" => ["09:00-16:00"],
-                "wednesday" => ["09:00-16:00"],
-                "thursday" => ["09:00-16:00"]
-                
+                'monday' => ['09:00-16:00'],
+                'tuesday' => ['09:00-16:00'],
+                'wednesday' => ['09:00-16:00'],
+                'thursday' => ['09:00-16:00'],
             ],
-            'slot_duration' => 5
+            'slot_duration' => 5,
         ]);
 
         return $user;
@@ -159,18 +169,22 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create single service for the category
-        Service::create([
-            'title' => 'ID Pick Up',
-            'slug' => 'id-pick-up',
-            'excerpt' => 'Schedule your Student ID pick up appointment.',
+        $idCreationService = Service::create([
+            'title' => 'ID Creation',
+            'slug' => 'id-creation',
+            'excerpt' => 'Please fill out this form with your PanpacificU email before proceeding to get your student ID: 
+https://bit.ly/StudentID-Urdaneta',
             'category_id' => $category->id,
             'image' => 'student-id-pickup.png'
         ]);
 
-        // Attach all services to the employee (not directly to user)
-        if ($user->employee) {
-            $allServices = Service::all();
-            $user->employee->services()->sync($allServices->pluck('id'));
+        // Attach only the ID Creation service to Darwin's employee profile
+        $darwinEmployee = Employee::whereHas('user', function ($q) {
+            $q->where('email', 'darwinrguillermo11@gmail.com');
+        })->first();
+
+        if ($darwinEmployee && $idCreationService) {
+            $darwinEmployee->services()->sync([$idCreationService->id]);
         }
     }
 }

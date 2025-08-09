@@ -133,15 +133,7 @@
                                                 placeholder="Contact Number" value="{{ $setting->phone }}">
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label for="inputName2" class="col-sm-2 col-form-label">WhatsApp</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" id="inputName2" name="whatsapp"
-                                                placeholder="WhatsApp Number" value="{{ $setting->whatsapp }}">
-                                            <small>Put whatsapp number with country code without space, Ex:
-                                                919865322154</small>
-                                        </div>
-                                    </div>
+                                    
                                     <div class="form-group row">
                                         <label for="inputName2" class="col-sm-2 col-form-label">Website
                                             Logo</label>

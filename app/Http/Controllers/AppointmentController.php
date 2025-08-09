@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Events\BookingCreated;
 use App\Events\StatusUpdated;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
+use Carbon\Carbon;
 
 
 class AppointmentController extends Controller
@@ -100,8 +103,74 @@ class AppointmentController extends Controller
         // Generate unique booking ID
         $validated['booking_id'] = 'BK-' . strtoupper(uniqid());
 
+        // Parse requested time range
+        [$requestedStartStr, $requestedEndStr] = array_map('trim', explode('-', $validated['booking_time']));
+        try {
+            $requestedStart = Carbon::createFromFormat('g:i A', $requestedStartStr);
+            $requestedEnd = Carbon::createFromFormat('g:i A', $requestedEndStr);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid booking time format.'
+            ], 422);
+        }
 
-        $appointment = Appointment::create($validated);
+        try {
+            $appointment = DB::transaction(function () use ($validated, $requestedStart, $requestedEnd) {
+                // Serialize bookings per employee by locking the employee row
+                DB::table('employees')
+                    ->where('id', $validated['employee_id'])
+                    ->lockForUpdate()
+                    ->select('id')
+                    ->first();
+
+                // Lock existing appointments for this employee and date to prevent race conditions
+                $existing = Appointment::where('employee_id', $validated['employee_id'])
+                    ->where('booking_date', $validated['booking_date'])
+                    ->whereNotIn('status', ['Cancelled'])
+                    ->lockForUpdate()
+                    ->get(['booking_time']);
+
+                foreach ($existing as $appt) {
+                    // Expect stored format like "06:00 AM - 06:30 AM"
+                    $parts = array_map('trim', explode('-', $appt->booking_time));
+                    if (count($parts) !== 2) {
+                        continue;
+                    }
+                    try {
+                        $existingStart = Carbon::createFromFormat('g:i A', $parts[0]);
+                        $existingEnd = Carbon::createFromFormat('g:i A', $parts[1]);
+                    } catch (\Exception $e) {
+                        continue;
+                    }
+
+                    // Overlap if start < otherEnd and end > otherStart
+                    if ($requestedStart->lt($existingEnd) && $requestedEnd->gt($existingStart)) {
+                        throw new \RuntimeException('slot_conflict');
+                    }
+                }
+
+                // Create appointment after passing overlap check
+                return Appointment::create($validated);
+            });
+        } catch (\RuntimeException $e) {
+            if ($e->getMessage() === 'slot_conflict') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected time slot is no longer available. Please choose another.'
+                ], 422);
+            }
+            throw $e;
+        } catch (QueryException $e) {
+            // Handle duplicate slot via DB unique index
+            if (str_contains(strtolower($e->getMessage()), 'duplicate') || $e->getCode() === '23000') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected time slot has just been booked. Please pick another slot.'
+                ], 422);
+            }
+            throw $e;
+        }
 
         event(new BookingCreated($appointment));
 
