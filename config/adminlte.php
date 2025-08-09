@@ -318,7 +318,6 @@ return [
 
         [
             'text' => 'Dashboard',
-            'route' => 'home',
             'icon' => 'fas fa-fw fa-home',
             'route' => 'dashboard'
         ],
@@ -358,28 +357,6 @@ return [
             ],
         ],
         [
-            'text'    => 'Users',
-            'url'  => 'user*',
-            'icon'    => 'fas fa-fw fa-users',
-            'can'  => 'users.view | users.create | users.edit | users.delete',
-            'submenu' => [
-                [
-                    'text' => 'Add New',
-                    'icon'    => 'fas fa-fw fa-plus',
-                    'route'  => 'user.create',
-                    'can'  => 'users.create',
-                ],
-                [
-                    'text' => 'View All',
-                    'icon'    => 'fas fa-users',
-                    'route' => 'user.index',
-                ],
-
-
-
-            ],
-        ],
-        [
             'text'    => 'Services',
             'url'  => 'service*',
             'icon'    => 'fas fa-fw fa-briefcase',
@@ -404,6 +381,34 @@ return [
                     'route'  => 'service.trash',
                     'can'    => 'services.view'
                 ],
+
+            ],
+        ],
+        [
+            'text'    => 'Users',
+            'url'  => 'user*',
+            'icon'    => 'fas fa-fw fa-users',
+            'can'  => 'users.view | users.create | users.edit | users.delete',
+            'submenu' => [
+                [
+                    'text' => 'Add New',
+                    'icon'    => 'fas fa-fw fa-plus',
+                    'route'  => 'user.create',
+                    'can'  => 'users.create',
+                ],
+                [
+                    'text' => 'View All',
+                    'icon'    => 'fas fa-users',
+                    'route' => 'user.index',
+                ],
+                [
+                    'text' => 'View Trash',
+                    'icon'    => 'fas fa-fw fa-trash',
+                    'route'  => 'user.trash',
+                    'can'    => 'users.view'
+                ],
+
+
 
             ],
         ],
