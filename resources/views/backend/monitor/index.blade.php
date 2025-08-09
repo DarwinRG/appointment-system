@@ -17,7 +17,7 @@
                 <span>Filters</span>
                 <div class="d-flex align-items-center">
                     <a href="{{ route('appointments.monitor', ['date_from' => now()->toDateString(), 'date_to' => now()->toDateString()]) }}" class="btn btn-sm btn-outline-primary mr-2">Today</a>
-                    <a href="{{ route('appointments.monitor') }}" class="btn btn-sm btn-outline-secondary">Refresh</a>
+                    <a href="{{ request()->fullUrl() }}" class="btn btn-sm btn-outline-secondary">Refresh</a>
                 </div>
             </div>
             <div class="card-body">
