@@ -67,7 +67,7 @@
                                                 </span>
                                             </div>
                                             <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                                name="name" value="{{ old('name') }}" placeholder="Full Name">
+                                                name="name" value="{{ old('name') }}" placeholder="Name">
                                         </div>
                                         @error('name')
                                             <small class="text-danger"><strong>{{ $message }}</strong></small>
@@ -85,7 +85,7 @@
                                                 </span>
                                             </div>
                                             <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                                name="email" value="{{ old('email') }}" placeholder="Email">
+                                                name="email" value="{{ old('email') }}" placeholder="Email address">
                                         </div>
                                         @error('email')
                                             <small class="text-danger"><strong>{{ $message }}</strong></small>
@@ -103,7 +103,7 @@
                                                 </span>
                                             </div>
                                             <input type="tel" class="form-control @error('phone') is-invalid @enderror"
-                                                name="phone" value="{{ old('phone') }}" placeholder="Phone No.">
+                                                name="phone" value="{{ old('phone') }}" placeholder="Phone number">
                                         </div>
                                         @error('phone')
                                             <small class="text-danger"><strong>{{ $message }}</strong></small>

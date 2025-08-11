@@ -124,6 +124,17 @@
             const palette = ['#2563eb','#16a34a','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316','#22c55e','#94a3b8','#a78bfa'];
             const pieOptions = { responsive: true, plugins: { legend: { position: 'bottom' } } };
 
+            // Status colors matching the appointments page
+            const statusColors = {
+                'Processing': '#3498db',
+                'Confirmed': '#2ecc71',
+                'Cancelled': '#ff0000',
+                'Completed': '#008000',
+                'On Hold': '#95a5a6',
+                'Rescheduled': '#f1c40f',
+                'No Show': '#e67e22',
+            };
+
             // Helper to compact to max slices and add Other
             function compactSlices(items, labelKey, valueKey, max = 8) {
                 const sorted = [...items].sort((a,b) => (b[valueKey]||0) - (a[valueKey]||0));
@@ -140,9 +151,11 @@
             (function(){
                 const labels = Object.keys(statusCounts);
                 const data = Object.values(statusCounts);
+                // Use status-specific colors for status chart
+                const statusBackgroundColors = labels.map(label => statusColors[label] || '#7f8c8d');
                 new Chart(document.getElementById('statusChart').getContext('2d'), {
                     type: 'doughnut',
-                    data: { labels, datasets: [{ data, backgroundColor: palette }] },
+                    data: { labels, datasets: [{ data, backgroundColor: statusBackgroundColors }] },
                     options: pieOptions
                 });
             })();

@@ -25,4 +25,20 @@ class Appointment extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Mutator to ensure name is always stored in uppercase
+     */
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = strtoupper(trim(strip_tags($value)));
+    }
+
+    /**
+     * Mutator to ensure email is always stored in lowercase
+     */
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = strtolower(trim(strip_tags($value)));
+    }
 }

@@ -107,7 +107,7 @@
                                         <label for="inputName" class="col-sm-2 col-form-label">Business Name</label>
                                         <div class="col-sm-10">
                                             <input type="text" class="form-control @error('bname') is-invalid @enderror"
-                                                name="bname" id="inputName" placeholder="Business Name"
+                                                name="bname" id="inputName" placeholder="Business name"
                                                 value="{{ $setting->bname }}">
                                             @error('bname')
                                                 <span class="text-danger">{{ $message }}</span>
@@ -119,7 +119,7 @@
                                         <div class="col-sm-10">
                                             <input type="email"
                                                 class="form-control @error('email') is-invalid @enderror" name="email"
-                                                id="inputEmail" placeholder="Email" value="{{ $setting->email }}">
+                                                id="inputEmail" placeholder="Email address" value="{{ $setting->email }}">
                                             @error('email')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror

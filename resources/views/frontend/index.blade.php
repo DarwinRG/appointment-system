@@ -286,23 +286,23 @@
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label for="customer-name" class="form-label">Full Name</label>
-                                            <input type="text" class="form-control" id="customer-name" placeholder="Enter your full name (e.g., JOHN A. DOE)" required maxlength="120" autocomplete="name">
+                                            <input type="text" class="form-control" id="customer-name" placeholder="Your full name" required maxlength="120" autocomplete="name">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-email" class="form-label">Email</label>
-                                            <input type="email" class="form-control" id="customer-email" inputmode="email" placeholder="Enter your Panpacific University email address" required maxlength="120" autocomplete="email">
+                                            <input type="email" class="form-control" id="customer-email" inputmode="email" placeholder="Your PanpacificU email address" required maxlength="120" autocomplete="email">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-student-id" class="form-label">Student ID</label>
-                                            <input type="text" class="form-control" id="customer-student-id" placeholder="Enter your student ID number" required maxlength="50" autocomplete="off">
+                                            <input type="text" class="form-control" id="customer-student-id" placeholder="Your Student ID" required maxlength="50" autocomplete="off">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="customer-phone" class="form-label">Phone</label>
-                                            <input type="tel" class="form-control" id="customer-phone" placeholder="Enter your phone number" required maxlength="20" autocomplete="tel" pattern="^[0-9+\-()\s]{6,20}$">
+                                            <input type="tel" class="form-control" id="customer-phone" placeholder="Your Phone number" required maxlength="20" autocomplete="tel" pattern="^[0-9+\-()\s]{6,20}$">
                                         </div>
                                         <div class="col-12">
                                             <label for="customer-notes" class="form-label">Notes (Optional)</label>
-                                            <textarea class="form-control" id="customer-notes" rows="3" placeholder="Enter any additional notes or comments (optional)"></textarea>
+                                            <textarea class="form-control" id="customer-notes" rows="3" placeholder="Additional notes (optional)"></textarea>
                                         </div>
                                     </div>
                                 </form>

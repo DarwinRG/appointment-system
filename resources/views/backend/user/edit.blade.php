@@ -69,7 +69,7 @@
                                             </div>
                                             <input type="text" class="form-control @error('name') is-invalid @enderror"
                                                 name="name" value="{{ old('name', $user->name) }}"
-                                                placeholder="Full Name">
+                                                placeholder="Name">
                                         </div>
                                         @error('name')
                                             <small class="text-danger"><strong>{{ $message }}</strong></small>

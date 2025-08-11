@@ -56,7 +56,7 @@
         {{-- Email field --}}
         <div class="input-group mb-3">
             <input type="tel" name="phone" class="form-control @error('phone') is-invalid @enderror"
-                    value="{{ old('phone') }}" placeholder="Phone no.">
+                    value="{{ old('phone') }}" placeholder="Phone number">
 
             <div class="input-group-append">
                 <div class="input-group-text">

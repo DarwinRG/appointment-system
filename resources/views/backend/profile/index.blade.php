@@ -406,7 +406,7 @@
                                             <label for="inputName" class="col-sm-2 col-form-label">Name</label>
                                             <div class="col-sm-10">
                                                 <input type="text" name="name" class="form-control" id="inputName"
-                                                    placeholder="Name" value="{{ $user->name }}">
+                                                    placeholder="Full name" value="{{ $user->name }}">
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -415,7 +415,7 @@
                                                 <input style="background-color: rgb(221, 221, 221);" type="email"
                                                     name="email"
                                                     class="form-control @error('email') is-invalid @enderror"
-                                                    id="inputEmail" placeholder="Email" value="{{ $user->email }}">
+                                                    id="inputEmail" placeholder="Email address" value="{{ $user->email }}">
                                                 @error('email')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror

@@ -79,6 +79,13 @@ class AppointmentController extends Controller
             'status' => 'required|string',
         ]);
 
+        // Server-side sanitization for additional security
+        $validated['name'] = $this->sanitizeName($validated['name']);
+        $validated['email'] = $this->sanitizeEmail($validated['email']);
+        $validated['student_id'] = $this->sanitizeStudentId($validated['student_id']);
+        $validated['phone'] = $this->sanitizePhone($validated['phone']);
+        $validated['notes'] = $this->sanitizeNotes($validated['notes']);
+
             // Set user_id if not provided but user is authenticated
         // if (auth()->check() && !$request->has('user_id')) {
         //     $validated['user_id'] = auth()->id();
@@ -358,5 +365,55 @@ class AppointmentController extends Controller
         return view('backend.monitor.index', compact(
             'statusCounts', 'serviceCounts', 'categoryCounts', 'staffCounts', 'totalCount', 'categories', 'services', 'activeFilters'
         ));
+    }
+
+    /**
+     * Sanitize customer name - convert to uppercase and remove dangerous characters
+     */
+    private function sanitizeName($name)
+    {
+        return strtoupper(trim(strip_tags($name)));
+    }
+
+    /**
+     * Sanitize email - convert to lowercase and remove dangerous characters
+     */
+    private function sanitizeEmail($email)
+    {
+        return strtolower(trim(strip_tags($email)));
+    }
+
+    /**
+     * Sanitize student ID - remove dangerous characters
+     */
+    private function sanitizeStudentId($studentId)
+    {
+        return trim(strip_tags($studentId));
+    }
+
+    /**
+     * Sanitize phone number - only allow digits, spaces, hyphens, parentheses, and plus sign
+     */
+    private function sanitizePhone($phone)
+    {
+        return preg_replace('/[^0-9+\-()\s]/', '', trim($phone));
+    }
+
+    /**
+     * Sanitize notes - remove dangerous HTML tags and scripts
+     */
+    private function sanitizeNotes($notes)
+    {
+        if (empty($notes)) {
+            return null;
+        }
+        
+        // Remove potentially dangerous HTML tags and scripts
+        $notes = strip_tags($notes);
+        $notes = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/i', '', $notes);
+        $notes = preg_replace('/javascript:/i', '', $notes);
+        $notes = preg_replace('/on\w+\s*=/i', '', $notes);
+        
+        return trim($notes);
     }
 }

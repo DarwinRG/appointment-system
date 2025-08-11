@@ -1,6 +1,81 @@
 
         $(document).ready(function() {
 
+            // Input sanitization and auto-capitalization functions
+            function sanitizeInput(input) {
+                if (typeof input !== 'string') return input;
+                
+                // Remove potentially dangerous characters and scripts
+                return input
+                    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+                    .replace(/javascript:/gi, '') // Remove javascript: protocol
+                    .replace(/on\w+\s*=/gi, '') // Remove event handlers
+                    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // Remove iframe tags
+                    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '') // Remove object tags
+                    .replace(/<embed\b[^<]*(?:(?!<\/embed>)<[^<]*)*<\/embed>/gi, '') // Remove embed tags
+                    .replace(/<link\b[^<]*(?:(?!<\/link>)<[^<]*)*<\/link>/gi, '') // Remove link tags
+                    .replace(/<meta\b[^<]*(?:(?!<\/meta>)<[^<]*)*<\/meta>/gi, '') // Remove meta tags
+                    .trim();
+            }
+
+            function autoCapitalizeName(input) {
+                if (typeof input !== 'string') return input;
+                
+                // Convert to uppercase and trim
+                return input.toUpperCase().trim();
+            }
+
+            function sanitizeEmail(email) {
+                if (typeof email !== 'string') return email;
+                
+                // Basic email sanitization - remove dangerous characters but keep valid email format
+                return email
+                    .toLowerCase()
+                    .replace(/[<>\"'&]/g, '') // Remove potentially dangerous characters
+                    .trim();
+            }
+
+            function sanitizePhone(phone) {
+                if (typeof phone !== 'string') return phone;
+                
+                // Only allow digits, spaces, hyphens, parentheses, and plus sign
+                return phone.replace(/[^0-9+\-()\s]/g, '').trim();
+            }
+
+            // Apply input sanitization and auto-capitalization
+            $('#customer-name').on('input', function() {
+                let value = $(this).val();
+                value = sanitizeInput(value);
+                value = autoCapitalizeName(value);
+                $(this).val(value);
+            });
+
+            $('#customer-email').on('input', function() {
+                let value = $(this).val();
+                value = sanitizeInput(value);
+                value = sanitizeEmail(value);
+                $(this).val(value);
+            });
+
+            $('#customer-student-id').on('input', function() {
+                let value = $(this).val();
+                value = sanitizeInput(value);
+                $(this).val(value);
+            });
+
+            $('#customer-phone').on('input', function() {
+                let value = $(this).val();
+                value = sanitizeInput(value);
+                value = sanitizePhone(value);
+                $(this).val(value);
+            });
+
+            $('#customer-notes').on('input', function() {
+                let value = $(this).val();
+                value = sanitizeInput(value);
+                $(this).val(value);
+            });
+
             const categories = @json($categories);
 
             const container = $('#categories-container'); // Target the container by ID
@@ -760,18 +835,19 @@
                 const form = $('#customer-info-form');
                 const csrfToken = form.find('input[name="_token"]').val(); // Get CSRF token from form
 
-                // Prepare booking data
+                // Prepare booking data with sanitization
                 const bookingData = {
                     employee_id: bookingState.selectedEmployee.id,
                     service_id: bookingState.selectedService.id,
-                    name: $('#customer-name').val(),
-                    email: $('#customer-email').val(),
-                    phone: $('#customer-phone').val(),
-                    notes: $('#customer-notes').val(),
+                    name: autoCapitalizeName(sanitizeInput($('#customer-name').val())),
+                    email: sanitizeEmail(sanitizeInput($('#customer-email').val())),
+                    student_id: sanitizeInput($('#customer-student-id').val()),
+                    phone: sanitizePhone(sanitizeInput($('#customer-phone').val())),
+                    notes: sanitizeInput($('#customer-notes').val()),
                     amount: parseFloat(bookingState.selectedService.price.replace(/[^0-9.]/g, '')),
                     booking_date: bookingState.selectedDate,
                     booking_time: bookingState.selectedTime.start || bookingState.selectedTime,
-                    status: 'Pending payment',
+                    status: 'Processing',
                     _token: csrfToken // Include CSRF token in payload
                 };
 
